@@ -1,1 +1,1 @@
-# goldenpay
+# GoldenPay
