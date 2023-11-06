@@ -27,14 +27,15 @@ message LoginReq {
 }
 
 message LoginResp {
-
+  string token = 1;
 }
 
 message GetUserReq {
+  uint64 id = 1;
 }
 
 message GetUserResp {
-
+  User user = 1;
 }
 
 message GetWalletReq {
