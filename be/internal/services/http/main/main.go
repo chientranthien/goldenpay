@@ -5,28 +5,33 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/gin-contrib/cors"
+
 	"github.com/chientranthien/goldenpay/internal/services/http/config"
 	"github.com/chientranthien/goldenpay/internal/services/http/controller"
 	userclient "github.com/chientranthien/goldenpay/internal/services/user/client"
 )
 
-var db = make(map[string]string)
-
 func setupRouter() *gin.Engine {
-	r := gin.Default()
+	server := gin.Default()
+	corsConfig := cors.DefaultConfig()
+	//config.AllowOrigins = []string{"*"}
+	//config.AllowOrigins = []string{"http://google.com", "http://facebook.com"}
+	corsConfig.AllowAllOrigins = true
+	server.Use(cors.New(corsConfig))
 
 	uClient := userclient.NewUserServiceClient(config.GetDefaultConfig().UserService.Addr)
 	signupController := controller.NewSignupController(uClient)
 	loginController := controller.NewLoginController(uClient)
 
-	r.POST("api/v1/signup", signupController.Signup)
-	r.POST("api/v1/login", loginController.Login)
+	server.POST("api/v1/signup", signupController.Signup)
+	server.POST("api/v1/login", loginController.Login)
 	// Ping test
-	r.GET("/ping", func(c *gin.Context) {
+	server.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
 	})
 
-	return r
+	return server
 }
 
 func main() {
