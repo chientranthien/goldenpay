@@ -3,10 +3,10 @@ const config = {
 }
 
 const userService = {}
-userService.Login = function (username, password) {
+userService.Login = function (email, password) {
   const api = config.host + "login"
   const body = {
-    username: username,
+    email: email,
     password: password
   }
 
@@ -24,11 +24,12 @@ userService.Login = function (username, password) {
   })
 }
 
-userService.Signup = function (email, password, user) {
+userService.Signup = function (email, password, name) {
   const api = config.host + "login"
   const body = {
-    username: username,
-    password: password
+    email: email,
+    password: password,
+    name: name
   }
 
   fetch(api, {
