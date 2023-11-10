@@ -30,7 +30,7 @@ userService.Signup = function (email, password, user) {
     username: username,
     password: password
   }
-  
+
   fetch(api, {
       method: 'POST',
       headers: {
