@@ -29,6 +29,7 @@ func (c SignupController) Login(ctx *gin.Context) {
 	}
 
 	resp, err := c.uclient.Login(common.Ctx(), (*proto.LoginReq)(req))
+
 	if err != nil {
 		log.Printf("failed to signup, err=%v", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{})

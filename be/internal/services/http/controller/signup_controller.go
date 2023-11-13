@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc/status"
 
 	"github.com/chientranthien/goldenpay/internal/common"
 	"github.com/chientranthien/goldenpay/internal/proto"
@@ -29,9 +30,14 @@ func (c SignupController) Signup(ctx *gin.Context) {
 	}
 
 	_, err := c.uclient.Signup(common.Ctx(), (*proto.SignupReq)(req))
+
+	code := status.Code(err)
+	resp := &SignupResp{
+		Code: common.GetCode(int32(code)),
+	}
+	ctx.JSON(http.StatusOK, resp)
 	if err != nil {
-		log.Printf("failed to signup, err=%v",err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{})
+		log.Printf("failed to signup, err=%v", err)
 		return
 	}
 }

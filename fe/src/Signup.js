@@ -9,13 +9,15 @@ export default function Signup() {
 
   function handleSubmit(e) {
     e.preventDefault()
-    UserService().Login(formData.email, formData.password)
+
+    UserService().Signup(formData.email, formData.password)
   }
 
   function handleChange(e) {
     Common().SetFormData(e, setFormData)
   }
 
+  // TODO(tom): use validation
   function validateEmail(e, email) {
     if (e.target.name === "email") {
       return ""
@@ -23,12 +25,14 @@ export default function Signup() {
 
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(email)) {
+      console.log("invalid email " + email)
       return "invalid email"
     }
 
     return ""
   }
 
+  // TODO(tom): use validation
   function validatePassword(e, password, confirmPassword) {
     if (e.target.name === "password") {
       return ""
@@ -56,17 +60,28 @@ export default function Signup() {
   return (
     <div className="container form-container">
       <div className="row justify-content-center">
-        <form onSubmit={handleSubmit} className="form col-6">
-          <input className="form-control" type="email" name="email" placeholder="Email" onChange={handleChange}
-                 value={formData.email}/>
-          <input className="form-control" type="text" name="name" placeholder="Name" value={formData.name}
-                 onChange={handleChange}/>
-          <input className="form-control" type="password" name="password" placeholder="Password"
-                 value={formData.password}
-                 onChange={handleChange}/>
-          <input className="form-control" type="password" name="confirmPassword" placeholder="Confirm Password"
-                 value={formData.confirmPassword}
-                 onChange={handleChange}/>
+        <form onSubmit={handleSubmit} className="form col-6 needs-validation">
+          <div class="form-floating mb-3">
+            <input className="form-control" id="email" type="email" name="email" placeholder="Email"
+                   onChange={handleChange} value={formData.email} required/>
+            <label for="email">Email</label>
+          </div>
+
+          <div class="form-floating">
+            <input className="form-control" id="name" type="text" name="name" placeholder="Name" value={formData.name}
+                   onChange={handleChange} required/>
+            <label for="name">Name</label>
+          </div>
+          <div class="form-floating">
+            <input className="form-control" id="password" type="password" name="password" placeholder="Password"
+                   value={formData.password} onChange={handleChange} required/>
+            <label for="password">Password</label>
+          </div>
+          <div class="form-floating">
+            <input className="form-control" id="confirmPassword" type="password" name="confirmPassword"
+                   placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} required/>
+            <label for="confirmPassword">Confirm Password</label>
+          </div>
 
           <button className="btn btn-primary bold" type="submit">Create Account</button>
         </form>

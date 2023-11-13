@@ -25,7 +25,7 @@ userService.Login = function (email, password) {
 }
 
 userService.Signup = function (email, password, name) {
-  const api = config.host + "login"
+  const api = config.host + "signup"
   const body = {
     email: email,
     password: password,

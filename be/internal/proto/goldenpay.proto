@@ -14,11 +14,17 @@ service WalletService {
 }
 
 message SignupReq {
-  string username = 1;
+  string email = 1;
   string password = 2;
+  string name = 3;
 }
 
+message Code {
+  int32 id = 1;
+  string msg = 2;
+}
 message SignupResp {
+  Code code = 1;
 }
 
 message LoginReq {
