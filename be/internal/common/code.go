@@ -22,11 +22,13 @@ var (
 
 	AllCodes = map[int32]*proto.Code{
 		CodeExisted.Id: CodeExisted,
+		CodeSuccess.Id: CodeSuccess,
+		CodeUnknown.Id: CodeUnknown,
 	}
 )
 
 func GetCode(c int32) *proto.Code {
-	codeObj, ok := AllCodes[int32(c)]
+	codeObj, ok := AllCodes[c]
 	if !ok {
 		return CodeUnknown
 	}

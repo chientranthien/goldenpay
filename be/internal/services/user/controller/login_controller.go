@@ -23,7 +23,7 @@ func (c LoginController) Login(ctx context.Context, req *proto.LoginReq) (*proto
 		return nil, err
 	}
 
-	user, _ := c.biz.GetByUsername(ctx, req.Username)
+	user, _ := c.biz.GetByEmail(ctx, req.Email)
 
 	if user.HashedPassword != c.biz.HashPassword(req.Password) {
 		return nil, status.New(codes.InvalidArgument, "incorrect password").Err()
@@ -38,8 +38,8 @@ func (c LoginController) Login(ctx context.Context, req *proto.LoginReq) (*proto
 }
 
 func (c LoginController) validate(req *proto.LoginReq) error {
-	if len(req.Username) == 0 || len(req.Password) == 0 {
-		return status.New(codes.InvalidArgument, "invalid username or password").Err()
+	if len(req.Email) == 0 || len(req.Password) == 0 {
+		return status.New(codes.InvalidArgument, "invalid email or password").Err()
 	}
 
 	return nil

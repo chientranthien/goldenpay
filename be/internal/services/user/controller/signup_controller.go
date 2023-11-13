@@ -31,11 +31,11 @@ func (c *SignupController) Signup(ctx context.Context, req *proto.SignupReq) (*p
 }
 
 func (c SignupController) validate(ctx context.Context, req *proto.SignupReq) error {
-	if len(req.Username) == 0 || len(req.Password) == 0 {
-		return status.New(codes.InvalidArgument, "invalid username or password").Err()
+	if len(req.Email) == 0 || len(req.Password) == 0 {
+		return status.New(codes.InvalidArgument, "invalid email or password").Err()
 	}
 
-	user, err := c.biz.GetByUsername(ctx, req.Username)
+	user, err := c.biz.GetByEmail(ctx, req.Email)
 	if err != nil {
 		return status.New(codes.Internal, "failed to get user").Err()
 	}

@@ -29,8 +29,9 @@ func NewUserBiz(
 
 func (b UserBiz) Signup(req *proto.SignupReq) (*proto.SignupResp, error) {
 	user := &model.User{
-		Username:       req.Username,
+		Email:          req.Email,
 		HashedPassword: b.HashPassword(req.Password),
+		Name:           req.Name,
 		Status:         model.StatusActive,
 		Version:        model.VersionFirst,
 		Ctime:          common.NowMillis(),
@@ -53,8 +54,8 @@ func (b UserBiz) Get(ctx context.Context, id uint64) (*model.User, error) {
 
 	return user, nil
 }
-func (b UserBiz) GetByUsername(ctx context.Context, username string) (*model.User, error) {
-	user, err := b.dao.GetByUsername(username)
+func (b UserBiz) GetByEmail(ctx context.Context, email string) (*model.User, error) {
+	user, err := b.dao.GetByEmail(email)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +72,7 @@ func (b UserBiz) GenerateToken(user *model.User) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
-	claims["username"] = user.Username
+	claims["email"] = user.Email
 	claims["uid"] = user.Id
 	claims["exp"] = (time.Duration(b.jwtConfig.DurationInMin) * time.Minute).Seconds()
 

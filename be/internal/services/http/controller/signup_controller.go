@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"github.com/chientranthien/goldenpay/internal/common"
@@ -28,6 +29,13 @@ func (c SignupController) Signup(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
+	if code := c.validate(req); code.Id != common.CodeSuccess.Id {
+		resp := &SignupResp{
+			Code: code,
+		}
+		ctx.JSON(http.StatusOK, resp)
+		return
+	}
 
 	_, err := c.uclient.Signup(common.Ctx(), (*proto.SignupReq)(req))
 
@@ -37,7 +45,17 @@ func (c SignupController) Signup(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, resp)
 	if err != nil {
-		log.Printf("failed to signup, err=%v", err)
+		log.Printf("failed to signup, req=%v, err=%v", err)
 		return
 	}
+}
+func (c SignupController) validate(req *SignupReq) *proto.Code {
+	if common.ValidateEmail(req.Email) != nil {
+		return &proto.Code{
+			Id:  int32(codes.InvalidArgument),
+			Msg: "invalid email",
+		}
+	}
+
+	return common.CodeSuccess
 }

@@ -28,9 +28,9 @@ func (d *UserDao) Update(user *model.User) error {
 	return nil
 }
 
-func (d *UserDao) GetByUsername(username string) (*model.User, error) {
+func (d *UserDao) GetByEmail(email string) (*model.User, error) {
 	u := &model.User{
-		Username: username,
+		Email: email,
 	}
 	d.getDB().Where(u).First(u)
 

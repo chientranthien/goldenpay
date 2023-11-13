@@ -3,13 +3,15 @@ use golden_pay_db;
 
 create table if not exists user_tab (
     id bigint unsigned auto_increment,
-    username varchar(100) not null,
+    email varchar(256) not null,
     hashed_password varchar(256) not null,
+    name nvarchar(256) not null,
     status int not null,
     version int not null,
     ctime bigint not null,
     mtime bigint not null,
-    primary key(id)
+    primary key(id),
+    unique key(email)
 );
 
 create table if not exists wallet_tab (

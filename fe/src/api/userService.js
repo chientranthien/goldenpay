@@ -1,3 +1,5 @@
+import React from 'react'
+
 const config = {
   host: "http://localhost:5000/api/v1/"
 }
@@ -10,6 +12,7 @@ userService.Login = function (email, password) {
     password: password
   }
 
+  let c = {}
   fetch(api, {
       method: 'POST',
       headers: {
@@ -17,14 +20,17 @@ userService.Login = function (email, password) {
       },
       body: JSON.stringify(body)
     }
-  ).then(() => {
-    console.log("aaaaaaaaaaaaaaaaaa")
+  ).then(resp => {
+    c = resp.json().code
   }).catch(() => {
-    console.log("bbbbbbbbbbbbbbbb")
+    console.log("failed to login")
   })
+
+  return c
 }
 
-userService.Signup = function (email, password, name) {
+
+userService.Signup = async function (email, password, name) {
   const api = config.host + "signup"
   const body = {
     email: email,
@@ -32,20 +38,24 @@ userService.Signup = function (email, password, name) {
     name: name
   }
 
-  fetch(api, {
+  let code = {}
+  await fetch(api, {
       method: 'POST',
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(body)
     }
-  ).then(() => {
-    console.log("aaaaaaaaaaaaaaaaaa")
-  }).catch(() => {
-    console.log("bbbbbbbbbbbbbbbb")
-  })
+  ).then(resp => resp.json())
+    .then(json => {
+      code = json.code
+    }).catch(() => {
+      console.error("failed to signup")
+    })
 
+  return code
 }
+
 export default function UserService() {
   return userService
 }

@@ -1,13 +1,5 @@
-import logo from './logo.svg';
 import './App.css';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  useRouteMatch,
-  useParams
-} from "react-router-dom";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
 import Login from './Login'
 import Signup from './Signup'
@@ -34,19 +26,19 @@ export default function App() {
             renders the first one that matches the current URL. */}
         <Switch>
           <Route path="/about">
-            <About />
+            <About/>
           </Route>
           <Route path="/users">
-            <Users />
+            <Users/>
           </Route>
           <Route exact path="/">
-            <Home />
+            <Home/>
           </Route>
           <Route path="/login">
-            <Login />
+            <Login/>
           </Route>
           <Route path="/signup">
-            <Signup />
+            <Signup/>
           </Route>
         </Switch>
       </div>
@@ -55,7 +47,42 @@ export default function App() {
 }
 
 function Home() {
-  return <h2>Home</h2>;
+  return (
+    <div className="container form-container">
+      <div className="row justify-content-center">
+
+        <div className="info col-lg-6 col-md-8 col-sm-12  col-xs-12">
+          <h5>Balance</h5>
+          <h2>$100</h2>
+          <button className="btn btn-primary">Transfer</button>
+        </div>
+
+      </div>
+      <div className="row justify-content-center">
+
+        <div className="info col-lg-6 col-md-8 col-sm-12  col-xs-12">
+          <h5>Recent Activity</h5>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">To: Tran Thien Chien</h5>
+              <h6 class="card-subtitle mb-2 text-body-secondary">Oct 2023</h6>
+              <p class="card-text">$100</p>
+              <span class="badge text-bg-warning">Pending</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">To: Tran Thien Chien</h5>
+              <p class="card-text">$100</p>
+              <span class="badge text-bg-success">Success</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )
+
 }
 
 function About() {
