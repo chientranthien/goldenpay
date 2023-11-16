@@ -12,8 +12,23 @@ import (
 	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
-type SignupReq proto.SignupReq
-type SignupResp proto.SignupResp
+type SignupReq struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
+}
+
+func (r SignupReq) toUserServiceSignupReq() *proto.SignupReq {
+	return &proto.SignupReq{
+		Email:    r.Email,
+		Password: r.Password,
+		Name:     r.Name,
+	}
+}
+
+type SignupResp struct {
+	Code *common.Code `json:"code"`
+}
 
 type SignupController struct {
 	uclient proto.UserServiceClient
@@ -29,7 +44,7 @@ func (c SignupController) Signup(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
-	if code := c.validate(req); code.Id != common.CodeSuccess.Id {
+	if code := c.validate(req); !code.IsSuccess() {
 		resp := &SignupResp{
 			Code: code,
 		}
@@ -37,21 +52,23 @@ func (c SignupController) Signup(ctx *gin.Context) {
 		return
 	}
 
-	_, err := c.uclient.Signup(common.Ctx(), (*proto.SignupReq)(req))
+	_, err := c.uclient.Signup(common.Ctx(), req.toUserServiceSignupReq())
 
 	code := status.Code(err)
 	resp := &SignupResp{
 		Code: common.GetCode(int32(code)),
 	}
+
 	ctx.JSON(http.StatusOK, resp)
 	if err != nil {
 		log.Printf("failed to signup, req=%v, err=%v", err)
 		return
 	}
 }
-func (c SignupController) validate(req *SignupReq) *proto.Code {
+
+func (c SignupController) validate(req *SignupReq) *common.Code {
 	if common.ValidateEmail(req.Email) != nil {
-		return &proto.Code{
+		return &common.Code{
 			Id:  int32(codes.InvalidArgument),
 			Msg: "invalid email",
 		}

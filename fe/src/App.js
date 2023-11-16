@@ -3,6 +3,8 @@ import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
 import Login from './Login'
 import Signup from './Signup'
+import Home from './Home'
+import Transfer from './Transfer'
 
 export default function App() {
   return (
@@ -40,49 +42,13 @@ export default function App() {
           <Route path="/signup">
             <Signup/>
           </Route>
+          <Route path="/transfer">
+            <Transfer/>
+          </Route>
         </Switch>
       </div>
     </Router>
   );
-}
-
-function Home() {
-  return (
-    <div className="container form-container">
-      <div className="row justify-content-center">
-
-        <div className="info col-lg-6 col-md-8 col-sm-12  col-xs-12">
-          <h5>Balance</h5>
-          <h2>$100</h2>
-          <button className="btn btn-primary">Transfer</button>
-        </div>
-
-      </div>
-      <div className="row justify-content-center">
-
-        <div className="info col-lg-6 col-md-8 col-sm-12  col-xs-12">
-          <h5>Recent Activity</h5>
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">To: Tran Thien Chien</h5>
-              <h6 class="card-subtitle mb-2 text-body-secondary">Oct 2023</h6>
-              <p class="card-text">$100</p>
-              <span class="badge text-bg-warning">Pending</span>
-            </div>
-          </div>
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">To: Tran Thien Chien</h5>
-              <p class="card-text">$100</p>
-              <span class="badge text-bg-success">Success</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  )
-
 }
 
 function About() {

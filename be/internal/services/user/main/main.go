@@ -40,6 +40,7 @@ func main() {
 			controller.NewSignupController(biz),
 			controller.NewLoginController(biz),
 			controller.NewGetController(biz),
+			controller.NewAuthzController(biz),
 		),
 	)
 

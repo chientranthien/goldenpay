@@ -5,6 +5,7 @@ option go_package = "./internal/proto";
 service UserService {
   rpc Signup(SignupReq) returns (SignupResp){}
   rpc Login(LoginReq) returns (LoginResp){}
+  rpc Authz(AuthzReq) returns (AuthzResp){}
   rpc Get(GetUserReq) returns (GetUserResp){}
 }
 
@@ -19,12 +20,7 @@ message SignupReq {
   string name = 3;
 }
 
-message Code {
-  int32 id = 1  [(gogoproto.jsontag) = "code"];
-  string msg = 2;
-}
 message SignupResp {
-  Code code = 1;
 }
 
 message LoginReq {
@@ -34,6 +30,15 @@ message LoginReq {
 
 message LoginResp {
   string token = 1;
+}
+
+message AuthzReq {
+  string token = 1;
+  string resource = 2;
+}
+
+message AuthzResp {
+
 }
 
 message GetUserReq {
@@ -53,9 +58,9 @@ message GetWalletResp {
 }
 
 message TransferReq {
-  uint64 to_user = 1;
-  int64 amount = 2;
-  string currency = 3;
+  uint64 from_user = 1;
+  string to_email = 2;
+  int64 amount = 3;
 }
 
 message TransferResp {

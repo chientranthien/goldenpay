@@ -5,7 +5,7 @@ const config = {
 }
 
 const userService = {}
-userService.Login = function (email, password) {
+userService.Login = async function (email, password) {
   const api = config.host + "login"
   const body = {
     email: email,
@@ -13,17 +13,44 @@ userService.Login = function (email, password) {
   }
 
   let c = {}
-  fetch(api, {
+  await fetch(api, {
       method: 'POST',
+      credentials: 'include',
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(body)
     }
   ).then(resp => {
-    c = resp.json().code
+    return resp.json()
+  }).then(json => {
+    c = json.code
   }).catch(() => {
     console.log("failed to login")
+  })
+
+  return c
+}
+
+userService.Authz = async function () {
+  const api = config.host + "authz"
+  const body = {}
+
+  let c = {}
+  await fetch(api, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    }
+  ).then(resp => {
+    return resp.json()
+  }).then(json => {
+    c = json.code
+  }).catch(() => {
+    console.log("failed to authz")
   })
 
   return c

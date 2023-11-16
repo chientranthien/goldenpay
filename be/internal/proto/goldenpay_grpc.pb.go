@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type UserServiceClient interface {
 	Signup(ctx context.Context, in *SignupReq, opts ...grpc.CallOption) (*SignupResp, error)
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
+	Authz(ctx context.Context, in *AuthzReq, opts ...grpc.CallOption) (*AuthzResp, error)
 	Get(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error)
 }
 
@@ -53,6 +54,15 @@ func (c *userServiceClient) Login(ctx context.Context, in *LoginReq, opts ...grp
 	return out, nil
 }
 
+func (c *userServiceClient) Authz(ctx context.Context, in *AuthzReq, opts ...grpc.CallOption) (*AuthzResp, error) {
+	out := new(AuthzResp)
+	err := c.cc.Invoke(ctx, "/UserService/Authz", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) Get(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error) {
 	out := new(GetUserResp)
 	err := c.cc.Invoke(ctx, "/UserService/Get", in, out, opts...)
@@ -68,6 +78,7 @@ func (c *userServiceClient) Get(ctx context.Context, in *GetUserReq, opts ...grp
 type UserServiceServer interface {
 	Signup(context.Context, *SignupReq) (*SignupResp, error)
 	Login(context.Context, *LoginReq) (*LoginResp, error)
+	Authz(context.Context, *AuthzReq) (*AuthzResp, error)
 	Get(context.Context, *GetUserReq) (*GetUserResp, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
@@ -81,6 +92,9 @@ func (UnimplementedUserServiceServer) Signup(context.Context, *SignupReq) (*Sign
 }
 func (UnimplementedUserServiceServer) Login(context.Context, *LoginReq) (*LoginResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedUserServiceServer) Authz(context.Context, *AuthzReq) (*AuthzResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Authz not implemented")
 }
 func (UnimplementedUserServiceServer) Get(context.Context, *GetUserReq) (*GetUserResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
@@ -134,6 +148,24 @@ func _UserService_Login_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_Authz_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthzReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).Authz(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UserService/Authz",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).Authz(ctx, req.(*AuthzReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetUserReq)
 	if err := dec(in); err != nil {
@@ -166,6 +198,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _UserService_Login_Handler,
+		},
+		{
+			MethodName: "Authz",
+			Handler:    _UserService_Authz_Handler,
 		},
 		{
 			MethodName: "Get",

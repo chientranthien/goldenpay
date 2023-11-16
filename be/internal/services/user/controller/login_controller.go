@@ -23,7 +23,14 @@ func (c LoginController) Login(ctx context.Context, req *proto.LoginReq) (*proto
 		return nil, err
 	}
 
-	user, _ := c.biz.GetByEmail(ctx, req.Email)
+	user, err := c.biz.GetByEmail(ctx, req.Email)
+	if err != nil {
+		return nil, status.New(codes.Internal, "unable to get user").Err()
+	}
+
+	if user.Id == 0 {
+		return nil, status.New(codes.NotFound, "not found").Err()
+	}
 
 	if user.HashedPassword != c.biz.HashPassword(req.Password) {
 		return nil, status.New(codes.InvalidArgument, "incorrect password").Err()

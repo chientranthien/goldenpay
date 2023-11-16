@@ -21,7 +21,7 @@ func TestInsert(t *testing.T) {
 		{
 			name: "success",
 			user: &model.User{
-				Username:       "test1",
+				Email:          "test1",
 				HashedPassword: "abcd",
 				Status:         1,
 				Version:        1,
@@ -51,12 +51,12 @@ func TestUpdate(t *testing.T) {
 		{
 			name: "success",
 			user: &model.User{
-				Id:       1,
-				Username: "test1",
-				Status:   2,
-				Version:  2,
-				Ctime:    uint64(time.Now().UnixMilli()),
-				Mtime:    uint64(time.Now().UnixMilli()),
+				Id:      1,
+				Email:   "test1",
+				Status:  2,
+				Version: 2,
+				Ctime:   uint64(time.Now().UnixMilli()),
+				Mtime:   uint64(time.Now().UnixMilli()),
 			},
 		},
 	}

@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import UserService from "./api/userService.js"
-import Common from "./common"
+import Common, {RedirectToHomeIfAlreadyAuthenticated} from "./common"
 import "./common.css"
 import {Link, useHistory} from "react-router-dom";
 
@@ -53,13 +53,15 @@ export default function Signup() {
   const [code, setCode] = useState({id: 0, msg: ""})
   const history = useHistory()
 
+  RedirectToHomeIfAlreadyAuthenticated()
+
   function handleSubmit(e) {
     e.preventDefault()
 
     UserService()
       .Signup(formData.email, formData.password, formData.name)
       .then(c => {
-        if (c.id == 0 || c.id == undefined) {
+        if (c.id == 0) {
           history.push('/login')
         }
         setCode(prev => {
@@ -76,7 +78,7 @@ export default function Signup() {
 
     <div className="container form-container">
       <div className="row justify-content-center">
-        <form onSubmit={handleSubmit} className="form needs-validation col-lg-6 col-md-8 col-sm-12  col-xs-12">
+        <form onSubmit={handleSubmit} className="form needs-validation col-lg-6 col-md-8 col-sm-12 col-xs-12">
           <div className="form-floating">
             <input className="form-control" id="email" type="email" name="email" placeholder="Email"
                    onChange={handleChange} value={formData.email} required/>

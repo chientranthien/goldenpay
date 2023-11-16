@@ -1,15 +1,29 @@
 import React, {useState} from "react"
 import "./Login.css"
-import UserService from "./api/userService.js"
-import Common from "./common"
-import {Link} from "react-router-dom";
+import Common, {CSS, RedirectToHomeIfAlreadyAuthenticated} from "./common"
+import {Link, useHistory} from "react-router-dom";
+import UserService from "./api/userService";
+
 
 export default function Login() {
   const [formData, setFormData] = useState({email: "", password: ""})
+  const [code, setCode] = useState({id: 0, msg: ""})
+  const history = useHistory()
+
+  RedirectToHomeIfAlreadyAuthenticated()
 
   function handleSubmit(e) {
-    e.preventDefault()
-    UserService().Login(formData.email, formData.password)
+    e.preventDefault();
+    UserService()
+      .Login(formData.email, formData.password)
+      .then(c => {
+        if (c.id == 0) {
+          history.push('/')
+        }
+        setCode(prev => {
+          return {...c}
+        })
+      })
   }
 
   function handleChange(e) {
@@ -19,20 +33,20 @@ export default function Login() {
   return (
     <div className="container form-container">
       <div className="row justify-content-center">
-        <form className="form needs-validation col-lg-6 col-md-8 col-sm-12  col-xs-12" onSubmit={handleSubmit}>
+        <form className={"form needs-validation" + CSS.FormCol} onSubmit={handleSubmit}>
           <div className="form-floating">
-            <input className="form-control" name="email" type="email" placeholder="Email" onChange={handleChange}
-                   value={formData.email}/>
+            <input className="form-control" id="email" name="email" type="email" onChange={handleChange}
+                   value={formData.email} required/>
             <label htmlFor="email">Email</label>
           </div>
           <div className="form-floating">
-            <input className="form-control" name="password" type="password" placeholder="Password"
-                   onChange={handleChange} value={formData.password}/>
+            <input className="form-control" name="password" type="password" onChange={handleChange}
+                   value={formData.password} required/>
             <label htmlFor="password">Password</label>
           </div>
           <button className="btn btn-primary" type="submit">Login</button>
+          {code.id != 0 && <div className="bs-callout bs-callout-danger">{code.msg}</div>}
         </form>
-
       </div>
 
       <div className="row justify-content-center">
