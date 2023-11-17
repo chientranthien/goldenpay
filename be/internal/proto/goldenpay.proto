@@ -37,8 +37,12 @@ message AuthzReq {
   string resource = 2;
 }
 
-message AuthzResp {
+message AuthzMetadata {
+  uint64 user_id = 1;
+}
 
+message AuthzResp {
+  AuthzMetadata metadata = 1;
 }
 
 message GetUserReq {
@@ -64,7 +68,9 @@ message TransferReq {
 }
 
 message TransferResp {
+  uint64 transaction_id = 1;
 }
+
 
 message User {
   uint64 id = 1;
@@ -80,8 +86,20 @@ message User {
 message Wallet {
   uint64 id = 1;
   uint64 user_id = 2;
-  int64 balance = 3;
-  string currency = 4;
+  uint64 email = 3;
+  int64 balance = 4;
+  string currency = 5;
+  uint64 status = 6;
+  uint64 version = 7;
+  uint64 ctime = 8;
+  uint64 mtime = 9;
+}
+
+message Transaction {
+  uint64 id = 1;
+  uint64 from_user = 2;
+  uint64 to_user = 3;
+  int64 amount = 4;
   uint64 status = 5;
   uint64 version = 6;
   uint64 ctime = 7;

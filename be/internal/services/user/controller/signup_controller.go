@@ -18,8 +18,8 @@ func NewSignupController(biz *biz.UserBiz) *SignupController {
 	return &SignupController{biz: biz}
 }
 
-func (c *SignupController) Signup(ctx context.Context, req *proto.SignupReq) (*proto.SignupResp, error) {
-	if err := c.validate(ctx, req); err != nil {
+func (c *SignupController) Signup(_ context.Context, req *proto.SignupReq) (*proto.SignupResp, error) {
+	if err := c.validate(req); err != nil {
 		return nil, err
 	}
 	resp, err := c.biz.Signup(req)
@@ -30,12 +30,12 @@ func (c *SignupController) Signup(ctx context.Context, req *proto.SignupReq) (*p
 	return resp, nil
 }
 
-func (c SignupController) validate(ctx context.Context, req *proto.SignupReq) error {
+func (c SignupController) validate(req *proto.SignupReq) error {
 	if len(req.Email) == 0 || len(req.Password) == 0 {
 		return status.New(codes.InvalidArgument, "invalid email or password").Err()
 	}
 
-	user, err := c.biz.GetByEmail(ctx, req.Email)
+	user, err := c.biz.GetByEmail(req.Email)
 	if err != nil {
 		return status.New(codes.Internal, "failed to get user").Err()
 	}

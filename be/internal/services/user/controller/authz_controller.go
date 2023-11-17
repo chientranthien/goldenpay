@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"strconv"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,12 +20,17 @@ func NewAuthzController(biz *biz.UserBiz) *AuthzController {
 }
 
 func (c AuthzController) Authz(ctx context.Context, req *proto.AuthzReq) (*proto.AuthzResp, error) {
-	_, err := c.biz.ParseToken(req.Token)
+	claims, err := c.biz.ParseToken(req.Token)
 	if err != nil {
 		return nil, err
 	}
 
-	return &proto.AuthzResp{}, nil
+	uid, err := strconv.ParseUint(claims.Audience, 10, 64)
+	if err != nil {
+		return nil, status.New(codes.InvalidArgument, "invalid token").Err()
+	}
+
+	return &proto.AuthzResp{Metadata: &proto.AuthzMetadata{UserId: uid}}, nil
 }
 
 func (c AuthzController) validate(req *proto.AuthzReq) error {

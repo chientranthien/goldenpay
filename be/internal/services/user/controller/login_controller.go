@@ -18,12 +18,12 @@ func NewLoginController(biz *biz.UserBiz) *LoginController {
 	return &LoginController{biz: biz}
 }
 
-func (c LoginController) Login(ctx context.Context, req *proto.LoginReq) (*proto.LoginResp, error) {
+func (c LoginController) Login(_ context.Context, req *proto.LoginReq) (*proto.LoginResp, error) {
 	if err := c.validate(req); err != nil {
 		return nil, err
 	}
 
-	user, err := c.biz.GetByEmail(ctx, req.Email)
+	user, err := c.biz.GetByEmail(req.Email)
 	if err != nil {
 		return nil, status.New(codes.Internal, "unable to get user").Err()
 	}

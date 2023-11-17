@@ -1,7 +1,6 @@
 package biz
 
 import (
-	"context"
 	"crypto/sha256"
 	"fmt"
 	"log"
@@ -49,7 +48,7 @@ func (b UserBiz) Signup(req *proto.SignupReq) (*proto.SignupResp, error) {
 	return &proto.SignupResp{}, nil
 }
 
-func (b UserBiz) Get(ctx context.Context, id uint64) (*model.User, error) {
+func (b UserBiz) Get(id uint64) (*model.User, error) {
 	user, err := b.dao.Get(id)
 	if err != nil {
 		return nil, err
@@ -57,7 +56,7 @@ func (b UserBiz) Get(ctx context.Context, id uint64) (*model.User, error) {
 
 	return user, nil
 }
-func (b UserBiz) GetByEmail(ctx context.Context, email string) (*model.User, error) {
+func (b UserBiz) GetByEmail(email string) (*model.User, error) {
 	user, err := b.dao.GetByEmail(email)
 	if err != nil {
 		return nil, err

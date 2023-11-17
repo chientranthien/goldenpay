@@ -15,8 +15,8 @@ func NewGetController(biz *biz.UserBiz) *GetController {
 	return &GetController{biz: biz}
 }
 
-func (c GetController) Get(ctx context.Context, req *proto.GetUserReq) (*proto.GetUserResp, error) {
-	user, err := c.biz.Get(ctx, req.Id)
+func (c GetController) Get(_ context.Context, req *proto.GetUserReq) (*proto.GetUserResp, error) {
+	user, err := c.biz.Get(req.Id)
 	if err != nil {
 		return nil, err
 	}

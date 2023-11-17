@@ -278,16 +278,65 @@ func (x *AuthzReq) GetResource() string {
 	return ""
 }
 
+type AuthzMetadata struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	UserId uint64 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+}
+
+func (x *AuthzMetadata) Reset() {
+	*x = AuthzMetadata{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_proto_goldenpay_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AuthzMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthzMetadata) ProtoMessage() {}
+
+func (x *AuthzMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_proto_goldenpay_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthzMetadata.ProtoReflect.Descriptor instead.
+func (*AuthzMetadata) Descriptor() ([]byte, []int) {
+	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *AuthzMetadata) GetUserId() uint64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
 type AuthzResp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	Metadata *AuthzMetadata `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
 func (x *AuthzResp) Reset() {
 	*x = AuthzResp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_goldenpay_proto_msgTypes[5]
+		mi := &file_internal_proto_goldenpay_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -300,7 +349,7 @@ func (x *AuthzResp) String() string {
 func (*AuthzResp) ProtoMessage() {}
 
 func (x *AuthzResp) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_goldenpay_proto_msgTypes[5]
+	mi := &file_internal_proto_goldenpay_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -313,7 +362,14 @@ func (x *AuthzResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AuthzResp.ProtoReflect.Descriptor instead.
 func (*AuthzResp) Descriptor() ([]byte, []int) {
-	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{5}
+	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *AuthzResp) GetMetadata() *AuthzMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
 }
 
 type GetUserReq struct {
@@ -327,7 +383,7 @@ type GetUserReq struct {
 func (x *GetUserReq) Reset() {
 	*x = GetUserReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_goldenpay_proto_msgTypes[6]
+		mi := &file_internal_proto_goldenpay_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -340,7 +396,7 @@ func (x *GetUserReq) String() string {
 func (*GetUserReq) ProtoMessage() {}
 
 func (x *GetUserReq) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_goldenpay_proto_msgTypes[6]
+	mi := &file_internal_proto_goldenpay_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -353,7 +409,7 @@ func (x *GetUserReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserReq.ProtoReflect.Descriptor instead.
 func (*GetUserReq) Descriptor() ([]byte, []int) {
-	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{6}
+	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetUserReq) GetId() uint64 {
@@ -374,7 +430,7 @@ type GetUserResp struct {
 func (x *GetUserResp) Reset() {
 	*x = GetUserResp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_goldenpay_proto_msgTypes[7]
+		mi := &file_internal_proto_goldenpay_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -387,7 +443,7 @@ func (x *GetUserResp) String() string {
 func (*GetUserResp) ProtoMessage() {}
 
 func (x *GetUserResp) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_goldenpay_proto_msgTypes[7]
+	mi := &file_internal_proto_goldenpay_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -400,7 +456,7 @@ func (x *GetUserResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserResp.ProtoReflect.Descriptor instead.
 func (*GetUserResp) Descriptor() ([]byte, []int) {
-	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{7}
+	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetUserResp) GetUser() *User {
@@ -419,7 +475,7 @@ type GetWalletReq struct {
 func (x *GetWalletReq) Reset() {
 	*x = GetWalletReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_goldenpay_proto_msgTypes[8]
+		mi := &file_internal_proto_goldenpay_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -432,7 +488,7 @@ func (x *GetWalletReq) String() string {
 func (*GetWalletReq) ProtoMessage() {}
 
 func (x *GetWalletReq) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_goldenpay_proto_msgTypes[8]
+	mi := &file_internal_proto_goldenpay_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -445,7 +501,7 @@ func (x *GetWalletReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWalletReq.ProtoReflect.Descriptor instead.
 func (*GetWalletReq) Descriptor() ([]byte, []int) {
-	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{8}
+	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{9}
 }
 
 type GetWalletResp struct {
@@ -460,7 +516,7 @@ type GetWalletResp struct {
 func (x *GetWalletResp) Reset() {
 	*x = GetWalletResp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_goldenpay_proto_msgTypes[9]
+		mi := &file_internal_proto_goldenpay_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -473,7 +529,7 @@ func (x *GetWalletResp) String() string {
 func (*GetWalletResp) ProtoMessage() {}
 
 func (x *GetWalletResp) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_goldenpay_proto_msgTypes[9]
+	mi := &file_internal_proto_goldenpay_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -486,7 +542,7 @@ func (x *GetWalletResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWalletResp.ProtoReflect.Descriptor instead.
 func (*GetWalletResp) Descriptor() ([]byte, []int) {
-	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{9}
+	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetWalletResp) GetBalance() int64 {
@@ -508,15 +564,15 @@ type TransferReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ToUser   uint64 `protobuf:"varint,1,opt,name=to_user,json=toUser,proto3" json:"to_user,omitempty"`
-	Amount   int64  `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
-	Currency string `protobuf:"bytes,3,opt,name=currency,proto3" json:"currency,omitempty"`
+	FromUser uint64 `protobuf:"varint,1,opt,name=from_user,json=fromUser,proto3" json:"from_user,omitempty"`
+	ToEmail  string `protobuf:"bytes,2,opt,name=to_email,json=toEmail,proto3" json:"to_email,omitempty"`
+	Amount   int64  `protobuf:"varint,3,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
 func (x *TransferReq) Reset() {
 	*x = TransferReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_goldenpay_proto_msgTypes[10]
+		mi := &file_internal_proto_goldenpay_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -529,7 +585,7 @@ func (x *TransferReq) String() string {
 func (*TransferReq) ProtoMessage() {}
 
 func (x *TransferReq) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_goldenpay_proto_msgTypes[10]
+	mi := &file_internal_proto_goldenpay_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -542,14 +598,21 @@ func (x *TransferReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransferReq.ProtoReflect.Descriptor instead.
 func (*TransferReq) Descriptor() ([]byte, []int) {
-	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{10}
+	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *TransferReq) GetToUser() uint64 {
+func (x *TransferReq) GetFromUser() uint64 {
 	if x != nil {
-		return x.ToUser
+		return x.FromUser
 	}
 	return 0
+}
+
+func (x *TransferReq) GetToEmail() string {
+	if x != nil {
+		return x.ToEmail
+	}
+	return ""
 }
 
 func (x *TransferReq) GetAmount() int64 {
@@ -559,23 +622,18 @@ func (x *TransferReq) GetAmount() int64 {
 	return 0
 }
 
-func (x *TransferReq) GetCurrency() string {
-	if x != nil {
-		return x.Currency
-	}
-	return ""
-}
-
 type TransferResp struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	TransactionId uint64 `protobuf:"varint,1,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
 }
 
 func (x *TransferResp) Reset() {
 	*x = TransferResp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_goldenpay_proto_msgTypes[11]
+		mi := &file_internal_proto_goldenpay_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -588,7 +646,7 @@ func (x *TransferResp) String() string {
 func (*TransferResp) ProtoMessage() {}
 
 func (x *TransferResp) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_goldenpay_proto_msgTypes[11]
+	mi := &file_internal_proto_goldenpay_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -601,7 +659,14 @@ func (x *TransferResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TransferResp.ProtoReflect.Descriptor instead.
 func (*TransferResp) Descriptor() ([]byte, []int) {
-	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{11}
+	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *TransferResp) GetTransactionId() uint64 {
+	if x != nil {
+		return x.TransactionId
+	}
+	return 0
 }
 
 type User struct {
@@ -622,7 +687,7 @@ type User struct {
 func (x *User) Reset() {
 	*x = User{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_goldenpay_proto_msgTypes[12]
+		mi := &file_internal_proto_goldenpay_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -635,7 +700,7 @@ func (x *User) String() string {
 func (*User) ProtoMessage() {}
 
 func (x *User) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_goldenpay_proto_msgTypes[12]
+	mi := &file_internal_proto_goldenpay_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -648,7 +713,7 @@ func (x *User) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use User.ProtoReflect.Descriptor instead.
 func (*User) Descriptor() ([]byte, []int) {
-	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{12}
+	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *User) GetId() uint64 {
@@ -725,7 +790,7 @@ type Wallet struct {
 func (x *Wallet) Reset() {
 	*x = Wallet{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_proto_goldenpay_proto_msgTypes[13]
+		mi := &file_internal_proto_goldenpay_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -738,7 +803,7 @@ func (x *Wallet) String() string {
 func (*Wallet) ProtoMessage() {}
 
 func (x *Wallet) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_proto_goldenpay_proto_msgTypes[13]
+	mi := &file_internal_proto_goldenpay_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -751,7 +816,7 @@ func (x *Wallet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Wallet.ProtoReflect.Descriptor instead.
 func (*Wallet) Descriptor() ([]byte, []int) {
-	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{13}
+	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *Wallet) GetId() uint64 {
@@ -810,6 +875,109 @@ func (x *Wallet) GetMtime() uint64 {
 	return 0
 }
 
+type Transaction struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id       uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	FromUser uint64 `protobuf:"varint,2,opt,name=from_user,json=fromUser,proto3" json:"from_user,omitempty"`
+	ToUser   uint64 `protobuf:"varint,3,opt,name=to_user,json=toUser,proto3" json:"to_user,omitempty"`
+	Amount   int64  `protobuf:"varint,4,opt,name=amount,proto3" json:"amount,omitempty"`
+	Status   uint64 `protobuf:"varint,5,opt,name=status,proto3" json:"status,omitempty"`
+	Version  uint64 `protobuf:"varint,6,opt,name=version,proto3" json:"version,omitempty"`
+	Ctime    uint64 `protobuf:"varint,7,opt,name=ctime,proto3" json:"ctime,omitempty"`
+	Mtime    uint64 `protobuf:"varint,8,opt,name=mtime,proto3" json:"mtime,omitempty"`
+}
+
+func (x *Transaction) Reset() {
+	*x = Transaction{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_internal_proto_goldenpay_proto_msgTypes[15]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Transaction) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Transaction) ProtoMessage() {}
+
+func (x *Transaction) ProtoReflect() protoreflect.Message {
+	mi := &file_internal_proto_goldenpay_proto_msgTypes[15]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Transaction.ProtoReflect.Descriptor instead.
+func (*Transaction) Descriptor() ([]byte, []int) {
+	return file_internal_proto_goldenpay_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *Transaction) GetId() uint64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *Transaction) GetFromUser() uint64 {
+	if x != nil {
+		return x.FromUser
+	}
+	return 0
+}
+
+func (x *Transaction) GetToUser() uint64 {
+	if x != nil {
+		return x.ToUser
+	}
+	return 0
+}
+
+func (x *Transaction) GetAmount() int64 {
+	if x != nil {
+		return x.Amount
+	}
+	return 0
+}
+
+func (x *Transaction) GetStatus() uint64 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *Transaction) GetVersion() uint64 {
+	if x != nil {
+		return x.Version
+	}
+	return 0
+}
+
+func (x *Transaction) GetCtime() uint64 {
+	if x != nil {
+		return x.Ctime
+	}
+	return 0
+}
+
+func (x *Transaction) GetMtime() uint64 {
+	if x != nil {
+		return x.Mtime
+	}
+	return 0
+}
+
 var File_internal_proto_goldenpay_proto protoreflect.FileDescriptor
 
 var file_internal_proto_goldenpay_proto_rawDesc = []byte{
@@ -831,24 +999,32 @@ var file_internal_proto_goldenpay_proto_rawDesc = []byte{
 	0x0a, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74,
 	0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
-	0x22, 0x0b, 0x0a, 0x09, 0x41, 0x75, 0x74, 0x68, 0x7a, 0x52, 0x65, 0x73, 0x70, 0x22, 0x1c, 0x0a,
-	0x0a, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x12, 0x0e, 0x0a, 0x02, 0x69,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x22, 0x28, 0x0a, 0x0b, 0x47,
-	0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x12, 0x19, 0x0a, 0x04, 0x75, 0x73,
-	0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x05, 0x2e, 0x55, 0x73, 0x65, 0x72, 0x52,
-	0x04, 0x75, 0x73, 0x65, 0x72, 0x22, 0x0e, 0x0a, 0x0c, 0x47, 0x65, 0x74, 0x57, 0x61, 0x6c, 0x6c,
-	0x65, 0x74, 0x52, 0x65, 0x71, 0x22, 0x45, 0x0a, 0x0d, 0x47, 0x65, 0x74, 0x57, 0x61, 0x6c, 0x6c,
-	0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x12, 0x18, 0x0a, 0x07, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63,
-	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65,
-	0x12, 0x1a, 0x0a, 0x08, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x08, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x22, 0x5a, 0x0a, 0x0b,
-	0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x65, 0x72, 0x52, 0x65, 0x71, 0x12, 0x17, 0x0a, 0x07, 0x74,
-	0x6f, 0x5f, 0x75, 0x73, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x74, 0x6f,
-	0x55, 0x73, 0x65, 0x72, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x1a, 0x0a, 0x08,
-	0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
-	0x63, 0x75, 0x72, 0x72, 0x65, 0x6e, 0x63, 0x79, 0x22, 0x0e, 0x0a, 0x0c, 0x54, 0x72, 0x61, 0x6e,
-	0x73, 0x66, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x22, 0xc7, 0x01, 0x0a, 0x04, 0x55, 0x73, 0x65,
+	0x22, 0x28, 0x0a, 0x0d, 0x41, 0x75, 0x74, 0x68, 0x7a, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
+	0x61, 0x12, 0x17, 0x0a, 0x07, 0x75, 0x73, 0x65, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x06, 0x75, 0x73, 0x65, 0x72, 0x49, 0x64, 0x22, 0x37, 0x0a, 0x09, 0x41, 0x75,
+	0x74, 0x68, 0x7a, 0x52, 0x65, 0x73, 0x70, 0x12, 0x2a, 0x0a, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64,
+	0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x41, 0x75, 0x74, 0x68,
+	0x7a, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x52, 0x08, 0x6d, 0x65, 0x74, 0x61, 0x64,
+	0x61, 0x74, 0x61, 0x22, 0x1c, 0x0a, 0x0a, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65,
+	0x71, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69,
+	0x64, 0x22, 0x28, 0x0a, 0x0b, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70,
+	0x12, 0x19, 0x0a, 0x04, 0x75, 0x73, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x05,
+	0x2e, 0x55, 0x73, 0x65, 0x72, 0x52, 0x04, 0x75, 0x73, 0x65, 0x72, 0x22, 0x0e, 0x0a, 0x0c, 0x47,
+	0x65, 0x74, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x71, 0x22, 0x45, 0x0a, 0x0d, 0x47,
+	0x65, 0x74, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x12, 0x18, 0x0a, 0x07,
+	0x62, 0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x07, 0x62,
+	0x61, 0x6c, 0x61, 0x6e, 0x63, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e,
+	0x63, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x63, 0x75, 0x72, 0x72, 0x65, 0x6e,
+	0x63, 0x79, 0x22, 0x5d, 0x0a, 0x0b, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x65, 0x72, 0x52, 0x65,
+	0x71, 0x12, 0x1b, 0x0a, 0x09, 0x66, 0x72, 0x6f, 0x6d, 0x5f, 0x75, 0x73, 0x65, 0x72, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x66, 0x72, 0x6f, 0x6d, 0x55, 0x73, 0x65, 0x72, 0x12, 0x19,
+	0x0a, 0x08, 0x74, 0x6f, 0x5f, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x74, 0x6f, 0x45, 0x6d, 0x61, 0x69, 0x6c, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f,
+	0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e,
+	0x74, 0x22, 0x35, 0x0a, 0x0c, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x65, 0x72, 0x52, 0x65, 0x73,
+	0x70, 0x12, 0x25, 0x0a, 0x0e, 0x74, 0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x74, 0x72, 0x61, 0x6e, 0x73,
+	0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x22, 0xc7, 0x01, 0x0a, 0x04, 0x55, 0x73, 0x65,
 	0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69,
 	0x64, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x12, 0x27, 0x0a, 0x0f, 0x68, 0x61, 0x73, 0x68, 0x65,
@@ -873,25 +1049,38 @@ var file_internal_proto_goldenpay_proto_rawDesc = []byte{
 	0x06, 0x20, 0x01, 0x28, 0x04, 0x52, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x14,
 	0x0a, 0x05, 0x63, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x63,
 	0x74, 0x69, 0x6d, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x6d, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x08, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x05, 0x6d, 0x74, 0x69, 0x6d, 0x65, 0x32, 0x9a, 0x01, 0x0a, 0x0b, 0x55,
-	0x73, 0x65, 0x72, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x23, 0x0a, 0x06, 0x53, 0x69,
-	0x67, 0x6e, 0x75, 0x70, 0x12, 0x0a, 0x2e, 0x53, 0x69, 0x67, 0x6e, 0x75, 0x70, 0x52, 0x65, 0x71,
-	0x1a, 0x0b, 0x2e, 0x53, 0x69, 0x67, 0x6e, 0x75, 0x70, 0x52, 0x65, 0x73, 0x70, 0x22, 0x00, 0x12,
-	0x20, 0x0a, 0x05, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x09, 0x2e, 0x4c, 0x6f, 0x67, 0x69, 0x6e,
-	0x52, 0x65, 0x71, 0x1a, 0x0a, 0x2e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x22,
-	0x00, 0x12, 0x20, 0x0a, 0x05, 0x41, 0x75, 0x74, 0x68, 0x7a, 0x12, 0x09, 0x2e, 0x41, 0x75, 0x74,
-	0x68, 0x7a, 0x52, 0x65, 0x71, 0x1a, 0x0a, 0x2e, 0x41, 0x75, 0x74, 0x68, 0x7a, 0x52, 0x65, 0x73,
-	0x70, 0x22, 0x00, 0x12, 0x22, 0x0a, 0x03, 0x47, 0x65, 0x74, 0x12, 0x0b, 0x2e, 0x47, 0x65, 0x74,
-	0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x71, 0x1a, 0x0c, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65,
-	0x72, 0x52, 0x65, 0x73, 0x70, 0x22, 0x00, 0x32, 0x62, 0x0a, 0x0d, 0x57, 0x61, 0x6c, 0x6c, 0x65,
-	0x74, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x26, 0x0a, 0x03, 0x47, 0x65, 0x74, 0x12,
-	0x0d, 0x2e, 0x47, 0x65, 0x74, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x71, 0x1a, 0x0e,
-	0x2e, 0x47, 0x65, 0x74, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x22, 0x00,
-	0x12, 0x29, 0x0a, 0x08, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x65, 0x72, 0x12, 0x0c, 0x2e, 0x54,
-	0x72, 0x61, 0x6e, 0x73, 0x66, 0x65, 0x72, 0x52, 0x65, 0x71, 0x1a, 0x0d, 0x2e, 0x54, 0x72, 0x61,
-	0x6e, 0x73, 0x66, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x22, 0x00, 0x42, 0x12, 0x5a, 0x10, 0x2e,
-	0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x01, 0x28, 0x04, 0x52, 0x05, 0x6d, 0x74, 0x69, 0x6d, 0x65, 0x22, 0xc9, 0x01, 0x0a, 0x0b, 0x54,
+	0x72, 0x61, 0x6e, 0x73, 0x61, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x02, 0x69, 0x64, 0x12, 0x1b, 0x0a, 0x09, 0x66, 0x72,
+	0x6f, 0x6d, 0x5f, 0x75, 0x73, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x66,
+	0x72, 0x6f, 0x6d, 0x55, 0x73, 0x65, 0x72, 0x12, 0x17, 0x0a, 0x07, 0x74, 0x6f, 0x5f, 0x75, 0x73,
+	0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x74, 0x6f, 0x55, 0x73, 0x65, 0x72,
+	0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03,
+	0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74,
+	0x75, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73,
+	0x12, 0x18, 0x0a, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x06, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x07, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x14, 0x0a, 0x05, 0x63, 0x74,
+	0x69, 0x6d, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x63, 0x74, 0x69, 0x6d, 0x65,
+	0x12, 0x14, 0x0a, 0x05, 0x6d, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x08, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x05, 0x6d, 0x74, 0x69, 0x6d, 0x65, 0x32, 0x9a, 0x01, 0x0a, 0x0b, 0x55, 0x73, 0x65, 0x72, 0x53,
+	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x23, 0x0a, 0x06, 0x53, 0x69, 0x67, 0x6e, 0x75, 0x70,
+	0x12, 0x0a, 0x2e, 0x53, 0x69, 0x67, 0x6e, 0x75, 0x70, 0x52, 0x65, 0x71, 0x1a, 0x0b, 0x2e, 0x53,
+	0x69, 0x67, 0x6e, 0x75, 0x70, 0x52, 0x65, 0x73, 0x70, 0x22, 0x00, 0x12, 0x20, 0x0a, 0x05, 0x4c,
+	0x6f, 0x67, 0x69, 0x6e, 0x12, 0x09, 0x2e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x71, 0x1a,
+	0x0a, 0x2e, 0x4c, 0x6f, 0x67, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x22, 0x00, 0x12, 0x20, 0x0a,
+	0x05, 0x41, 0x75, 0x74, 0x68, 0x7a, 0x12, 0x09, 0x2e, 0x41, 0x75, 0x74, 0x68, 0x7a, 0x52, 0x65,
+	0x71, 0x1a, 0x0a, 0x2e, 0x41, 0x75, 0x74, 0x68, 0x7a, 0x52, 0x65, 0x73, 0x70, 0x22, 0x00, 0x12,
+	0x22, 0x0a, 0x03, 0x47, 0x65, 0x74, 0x12, 0x0b, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72,
+	0x52, 0x65, 0x71, 0x1a, 0x0c, 0x2e, 0x47, 0x65, 0x74, 0x55, 0x73, 0x65, 0x72, 0x52, 0x65, 0x73,
+	0x70, 0x22, 0x00, 0x32, 0x62, 0x0a, 0x0d, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x53, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x12, 0x26, 0x0a, 0x03, 0x47, 0x65, 0x74, 0x12, 0x0d, 0x2e, 0x47, 0x65,
+	0x74, 0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x71, 0x1a, 0x0e, 0x2e, 0x47, 0x65, 0x74,
+	0x57, 0x61, 0x6c, 0x6c, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x22, 0x00, 0x12, 0x29, 0x0a, 0x08,
+	0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x65, 0x72, 0x12, 0x0c, 0x2e, 0x54, 0x72, 0x61, 0x6e, 0x73,
+	0x66, 0x65, 0x72, 0x52, 0x65, 0x71, 0x1a, 0x0d, 0x2e, 0x54, 0x72, 0x61, 0x6e, 0x73, 0x66, 0x65,
+	0x72, 0x52, 0x65, 0x73, 0x70, 0x22, 0x00, 0x42, 0x12, 0x5a, 0x10, 0x2e, 0x2f, 0x69, 0x6e, 0x74,
+	0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x33,
 }
 
 var (
@@ -906,42 +1095,45 @@ func file_internal_proto_goldenpay_proto_rawDescGZIP() []byte {
 	return file_internal_proto_goldenpay_proto_rawDescData
 }
 
-var file_internal_proto_goldenpay_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_internal_proto_goldenpay_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_internal_proto_goldenpay_proto_goTypes = []interface{}{
 	(*SignupReq)(nil),     // 0: SignupReq
 	(*SignupResp)(nil),    // 1: SignupResp
 	(*LoginReq)(nil),      // 2: LoginReq
 	(*LoginResp)(nil),     // 3: LoginResp
 	(*AuthzReq)(nil),      // 4: AuthzReq
-	(*AuthzResp)(nil),     // 5: AuthzResp
-	(*GetUserReq)(nil),    // 6: GetUserReq
-	(*GetUserResp)(nil),   // 7: GetUserResp
-	(*GetWalletReq)(nil),  // 8: GetWalletReq
-	(*GetWalletResp)(nil), // 9: GetWalletResp
-	(*TransferReq)(nil),   // 10: TransferReq
-	(*TransferResp)(nil),  // 11: TransferResp
-	(*User)(nil),          // 12: User
-	(*Wallet)(nil),        // 13: Wallet
+	(*AuthzMetadata)(nil), // 5: AuthzMetadata
+	(*AuthzResp)(nil),     // 6: AuthzResp
+	(*GetUserReq)(nil),    // 7: GetUserReq
+	(*GetUserResp)(nil),   // 8: GetUserResp
+	(*GetWalletReq)(nil),  // 9: GetWalletReq
+	(*GetWalletResp)(nil), // 10: GetWalletResp
+	(*TransferReq)(nil),   // 11: TransferReq
+	(*TransferResp)(nil),  // 12: TransferResp
+	(*User)(nil),          // 13: User
+	(*Wallet)(nil),        // 14: Wallet
+	(*Transaction)(nil),   // 15: Transaction
 }
 var file_internal_proto_goldenpay_proto_depIdxs = []int32{
-	12, // 0: GetUserResp.user:type_name -> User
-	0,  // 1: UserService.Signup:input_type -> SignupReq
-	2,  // 2: UserService.Login:input_type -> LoginReq
-	4,  // 3: UserService.Authz:input_type -> AuthzReq
-	6,  // 4: UserService.Get:input_type -> GetUserReq
-	8,  // 5: WalletService.Get:input_type -> GetWalletReq
-	10, // 6: WalletService.Transfer:input_type -> TransferReq
-	1,  // 7: UserService.Signup:output_type -> SignupResp
-	3,  // 8: UserService.Login:output_type -> LoginResp
-	5,  // 9: UserService.Authz:output_type -> AuthzResp
-	7,  // 10: UserService.Get:output_type -> GetUserResp
-	9,  // 11: WalletService.Get:output_type -> GetWalletResp
-	11, // 12: WalletService.Transfer:output_type -> TransferResp
-	7,  // [7:13] is the sub-list for method output_type
-	1,  // [1:7] is the sub-list for method input_type
-	1,  // [1:1] is the sub-list for extension type_name
-	1,  // [1:1] is the sub-list for extension extendee
-	0,  // [0:1] is the sub-list for field type_name
+	5,  // 0: AuthzResp.metadata:type_name -> AuthzMetadata
+	13, // 1: GetUserResp.user:type_name -> User
+	0,  // 2: UserService.Signup:input_type -> SignupReq
+	2,  // 3: UserService.Login:input_type -> LoginReq
+	4,  // 4: UserService.Authz:input_type -> AuthzReq
+	7,  // 5: UserService.Get:input_type -> GetUserReq
+	9,  // 6: WalletService.Get:input_type -> GetWalletReq
+	11, // 7: WalletService.Transfer:input_type -> TransferReq
+	1,  // 8: UserService.Signup:output_type -> SignupResp
+	3,  // 9: UserService.Login:output_type -> LoginResp
+	6,  // 10: UserService.Authz:output_type -> AuthzResp
+	8,  // 11: UserService.Get:output_type -> GetUserResp
+	10, // 12: WalletService.Get:output_type -> GetWalletResp
+	12, // 13: WalletService.Transfer:output_type -> TransferResp
+	8,  // [8:14] is the sub-list for method output_type
+	2,  // [2:8] is the sub-list for method input_type
+	2,  // [2:2] is the sub-list for extension type_name
+	2,  // [2:2] is the sub-list for extension extendee
+	0,  // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_internal_proto_goldenpay_proto_init() }
@@ -1011,7 +1203,7 @@ func file_internal_proto_goldenpay_proto_init() {
 			}
 		}
 		file_internal_proto_goldenpay_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AuthzResp); i {
+			switch v := v.(*AuthzMetadata); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1023,7 +1215,7 @@ func file_internal_proto_goldenpay_proto_init() {
 			}
 		}
 		file_internal_proto_goldenpay_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetUserReq); i {
+			switch v := v.(*AuthzResp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1035,7 +1227,7 @@ func file_internal_proto_goldenpay_proto_init() {
 			}
 		}
 		file_internal_proto_goldenpay_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetUserResp); i {
+			switch v := v.(*GetUserReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1047,7 +1239,7 @@ func file_internal_proto_goldenpay_proto_init() {
 			}
 		}
 		file_internal_proto_goldenpay_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetWalletReq); i {
+			switch v := v.(*GetUserResp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1059,7 +1251,7 @@ func file_internal_proto_goldenpay_proto_init() {
 			}
 		}
 		file_internal_proto_goldenpay_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetWalletResp); i {
+			switch v := v.(*GetWalletReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1071,7 +1263,7 @@ func file_internal_proto_goldenpay_proto_init() {
 			}
 		}
 		file_internal_proto_goldenpay_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TransferReq); i {
+			switch v := v.(*GetWalletResp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1083,7 +1275,7 @@ func file_internal_proto_goldenpay_proto_init() {
 			}
 		}
 		file_internal_proto_goldenpay_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TransferResp); i {
+			switch v := v.(*TransferReq); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1095,7 +1287,7 @@ func file_internal_proto_goldenpay_proto_init() {
 			}
 		}
 		file_internal_proto_goldenpay_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*User); i {
+			switch v := v.(*TransferResp); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1107,7 +1299,31 @@ func file_internal_proto_goldenpay_proto_init() {
 			}
 		}
 		file_internal_proto_goldenpay_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*User); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_proto_goldenpay_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Wallet); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_internal_proto_goldenpay_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Transaction); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1125,7 +1341,7 @@ func file_internal_proto_goldenpay_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_internal_proto_goldenpay_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

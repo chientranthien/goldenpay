@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +16,11 @@ type TransferReq struct {
 }
 
 type TransferResp struct {
-	Code *common.Code `json:"code"`
+	Code        *common.Code `json:"code"`
+	Transaction Transaction  `json:"transaction"`
+}
+type Transaction struct {
+	id uint64 `json:"id"`
 }
 type TransferController struct {
 	uClient proto.UserServiceClient
@@ -47,17 +52,29 @@ func (c TransferController) Transfer(ctx gin.Context) {
 		return
 	}
 
-	_, err := c.uClient.Authz(common.Ctx(), &proto.AuthzReq{Token: token})
+	authzResp, err := c.uClient.Authz(common.Ctx(), &proto.AuthzReq{Token: token})
 	if err != nil {
 		ctx.JSON(http.StatusOK, &TransferResp{Code: common.GetCodeFromErr(err)})
 		return
 	}
 
-	c.wClient.Transfer(common.Ctx(),&proto.TransferReq{
-		ToEmail:   0,
+	transferResp, err := c.wClient.Transfer(common.Ctx(), &proto.TransferReq{
+		FromUser: authzResp.Metadata.UserId,
+		ToEmail:  req.ToEmail,
 		Amount:   req.Amount,
 	})
+	ctx.JSON(
+		http.StatusOK,
+		&TransferResp{
+			Code:        common.GetCodeFromErr(err),
+			Transaction: Transaction{id: transferResp.TransactionId},
+		},
+	)
 
+	if err != nil {
+		log.Printf("failed to transfer, err=%v", err)
+		return
+	}
 }
 
 func (c TransferController) validate(req *TransferReq) *common.Code {
