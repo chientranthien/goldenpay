@@ -3,7 +3,7 @@ package dao
 import (
 	"gorm.io/gorm"
 
-	"github.com/chientranthien/goldenpay/internal/services/user/model"
+	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
 type UserDao struct {
@@ -18,16 +18,16 @@ func (d UserDao) getDB() *gorm.DB {
 	return d.db.Table("user_tab")
 }
 
-func (d *UserDao) Insert(user *model.User) error {
+func (d *UserDao) Insert(user *proto.User) error {
 	return d.getDB().Create(user).Error
 }
 
-func (d *UserDao) Update(user *model.User) error {
+func (d *UserDao) Update(user *proto.User) error {
 	return d.getDB().Updates(user).Commit().Error
 }
 
-func (d *UserDao) GetByEmail(email string) (*model.User, error) {
-	u := &model.User{
+func (d *UserDao) GetByEmail(email string) (*proto.User, error) {
+	u := &proto.User{
 		Email: email,
 	}
 
@@ -38,8 +38,8 @@ func (d *UserDao) GetByEmail(email string) (*model.User, error) {
 	return u, nil
 }
 
-func (d *UserDao) Get(userID uint64) (*model.User, error) {
-	u := &model.User{
+func (d *UserDao) Get(userID uint64) (*proto.User, error) {
+	u := &proto.User{
 		Id: userID,
 	}
 

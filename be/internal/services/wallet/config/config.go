@@ -23,12 +23,7 @@ func Get() Config {
 }
 
 type Config struct {
-	DB          common.DBConfig      `yaml:"db"`
-	UserService common.ServiceConfig `yaml:"user_service"`
-	JWT         JWTConfig            `yaml:"jwt"`
-}
-
-type JWTConfig struct {
-	Secret        string `yaml:"secret"`
-	DurationInMin int64  `yaml:"duration_in_min"`
+	DB            common.DBConfig      `yaml:"db"`
+	WalletService common.ServiceConfig `yaml:"wallet_service"`
+	Kafka         common.KafkaConfig   `yaml:"kafka"`
 }

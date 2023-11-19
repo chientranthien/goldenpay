@@ -14,7 +14,6 @@ import (
 	"github.com/chientranthien/goldenpay/internal/proto"
 	"github.com/chientranthien/goldenpay/internal/services/user/config"
 	"github.com/chientranthien/goldenpay/internal/services/user/dao"
-	"github.com/chientranthien/goldenpay/internal/services/user/model"
 )
 
 type UserBiz struct {
@@ -30,12 +29,12 @@ func NewUserBiz(
 }
 
 func (b UserBiz) Signup(req *proto.SignupReq) (*proto.SignupResp, error) {
-	user := &model.User{
+	user := &proto.User{
 		Email:          req.Email,
 		HashedPassword: b.HashPassword(req.Password),
 		Name:           req.Name,
-		Status:         model.StatusActive,
-		Version:        model.VersionFirst,
+		Status:         common.UserStatusActive,
+		Version:        common.FirstVersion,
 		Ctime:          common.NowMillis(),
 		Mtime:          common.NowMillis(),
 	}
@@ -48,7 +47,7 @@ func (b UserBiz) Signup(req *proto.SignupReq) (*proto.SignupResp, error) {
 	return &proto.SignupResp{}, nil
 }
 
-func (b UserBiz) Get(id uint64) (*model.User, error) {
+func (b UserBiz) Get(id uint64) (*proto.User, error) {
 	user, err := b.dao.Get(id)
 	if err != nil {
 		return nil, err
@@ -56,13 +55,14 @@ func (b UserBiz) Get(id uint64) (*model.User, error) {
 
 	return user, nil
 }
-func (b UserBiz) GetByEmail(email string) (*model.User, error) {
-	user, err := b.dao.GetByEmail(email)
+
+func (b UserBiz) GetByEmail(req *proto.GetByEmailReq ) (*proto.GetByEmailResp, error) {
+	user, err := b.dao.GetByEmail(req.Email)
 	if err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	return &proto.GetByEmailResp{User: user}, nil
 }
 
 func (b UserBiz) HashPassword(password string) string {
@@ -70,7 +70,7 @@ func (b UserBiz) HashPassword(password string) string {
 	return fmt.Sprintf("%x", sum256)
 }
 
-func (b UserBiz) GenerateToken(user *model.User) (string, error) {
+func (b UserBiz) GenerateToken(user *proto.User) (string, error) {
 	claims := &jwt.StandardClaims{
 		Audience:  fmt.Sprintf("%d", user.Id),
 		ExpiresAt: time.Now().Add(time.Duration(b.jwtConfig.DurationInMin) * time.Minute).Unix(),

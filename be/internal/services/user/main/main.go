@@ -41,6 +41,7 @@ func main() {
 			controller.NewLoginController(biz),
 			controller.NewGetController(biz),
 			controller.NewAuthzController(biz),
+			controller.NewGetByEmailController( biz),
 		),
 	)
 

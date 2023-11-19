@@ -6,12 +6,38 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/go-sql-driver/mysql"
 	"gopkg.in/yaml.v3"
 )
 
 const (
 	defaultConfigFile = "config.yaml"
 )
+
+type DBConfig struct {
+	Addr   string `yaml:"addr"`
+	User   string `yaml:"user"`
+	Pass   string `yaml:"pass"`
+	DBName string `yaml:"db_name"`
+}
+
+func (c DBConfig) GetDSN() string {
+	conf := mysql.Config{
+		User:                 c.User,
+		Passwd:               c.Pass,
+		Net:                  "tcp",
+		Addr:                 c.Addr,
+		DBName:               c.DBName,
+		AllowNativePasswords: true,
+	}
+	return conf.FormatDSN()
+}
+
+type KafkaConfig struct {
+	Addrs   []string `yaml:"addrs"`
+	Version string   `yaml:"version"`
+	Topic   string   `yaml:"topic"`
+}
 
 type ServiceConfig struct {
 	Addr string `yaml:"addr"`
@@ -26,7 +52,7 @@ func GetDefaultConfigFile() string {
 	return GetCurrentDir() + "/" + defaultConfigFile
 }
 
-func GetDefaultConfig(c any){
+func GetDefaultConfig(c any) {
 	f, err := os.Open(GetDefaultConfigFile())
 	if err != nil {
 		log.Fatalf("failed to open config file, err=%v", err)

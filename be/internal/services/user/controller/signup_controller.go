@@ -35,10 +35,11 @@ func (c SignupController) validate(req *proto.SignupReq) error {
 		return status.New(codes.InvalidArgument, "invalid email or password").Err()
 	}
 
-	user, err := c.biz.GetByEmail(req.Email)
+	getResp, err := c.biz.GetByEmail(&proto.GetByEmailReq{Email: req.Email})
 	if err != nil {
 		return status.New(codes.Internal, "failed to get user").Err()
 	}
+	user := getResp.User
 
 	if user != nil && user.Id != 0 {
 		return status.New(codes.InvalidArgument, "existed user").Err()

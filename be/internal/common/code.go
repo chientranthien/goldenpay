@@ -10,6 +10,10 @@ type Code struct {
 	Msg string `json:"msg"`
 }
 
+func NewCode(id int32, msg string) *Code {
+	return &Code{Id: id, Msg: msg}
+}
+
 func (c Code) IsSuccess() bool {
 	return c.Id == CodeSuccess.Id
 }

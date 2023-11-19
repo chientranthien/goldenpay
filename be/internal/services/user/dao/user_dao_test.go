@@ -9,18 +9,18 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"github.com/chientranthien/goldenpay/internal/proto"
 	"github.com/chientranthien/goldenpay/internal/services/user/config"
-	"github.com/chientranthien/goldenpay/internal/services/user/model"
 )
 
 func TestInsert(t *testing.T) {
 	testCases := []struct {
 		name string
-		user *model.User
+		user *proto.User
 	}{
 		{
 			name: "success",
-			user: &model.User{
+			user: &proto.User{
 				Email:          "test1",
 				HashedPassword: "abcd",
 				Status:         1,
@@ -46,11 +46,11 @@ func TestInsert(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	testCases := []struct {
 		name string
-		user *model.User
+		user *proto.User
 	}{
 		{
 			name: "success",
-			user: &model.User{
+			user: &proto.User{
 				Id:      1,
 				Email:   "test1",
 				Status:  2,

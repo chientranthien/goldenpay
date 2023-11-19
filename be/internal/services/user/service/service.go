@@ -13,6 +13,7 @@ type Service struct {
 	*controller.LoginController
 	*controller.GetController
 	*controller.AuthzController
+	*controller.GetByEmailController
 }
 
 func NewService(
@@ -20,12 +21,14 @@ func NewService(
 	loginController *controller.LoginController,
 	getController *controller.GetController,
 	authzController *controller.AuthzController,
+	getByEmailController *controller.GetByEmailController,
 ) *Service {
 	return &Service{
 		SignupController: signupController,
-		LoginController:  loginController,
-		GetController:    getController,
-		AuthzController:  authzController,
+		LoginController: loginController,
+		GetController: getController,
+		AuthzController: authzController,
+		GetByEmailController: getByEmailController,
 	}
 }
 
@@ -44,3 +47,8 @@ func (u Service) Get(ctx context.Context, req *proto.GetUserReq) (*proto.GetUser
 func (u Service) Authz(ctx context.Context, req *proto.AuthzReq) (*proto.AuthzResp, error) {
 	return u.AuthzController.Authz(ctx, req)
 }
+
+func (u Service) GetByEmail(ctx context.Context, req *proto.GetByEmailReq) (*proto.GetByEmailResp, error) {
+	return u.GetByEmailController.GetByEmail(req)
+}
+

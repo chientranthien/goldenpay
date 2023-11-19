@@ -23,10 +23,11 @@ func (c LoginController) Login(_ context.Context, req *proto.LoginReq) (*proto.L
 		return nil, err
 	}
 
-	user, err := c.biz.GetByEmail(req.Email)
+	getResp, err := c.biz.GetByEmail(&proto.GetByEmailReq{Email: req.Email})
 	if err != nil {
 		return nil, status.New(codes.Internal, "unable to get user").Err()
 	}
+	user := getResp.User
 
 	if user.Id == 0 {
 		return nil, status.New(codes.NotFound, "not found").Err()
