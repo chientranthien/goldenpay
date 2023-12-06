@@ -9,3 +9,6 @@ gen_wallet_proto:
 		./internal/proto/wallet_service.proto
 
 gen_proto: gen_user_proto gen_wallet_proto
+
+build_all:
+	@script/build.sh
