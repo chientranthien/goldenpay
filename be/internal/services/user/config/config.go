@@ -1,8 +1,6 @@
 package config
 
 import (
-	"log"
-
 	"github.com/chientranthien/goldenpay/internal/common"
 )
 
@@ -16,16 +14,17 @@ func init() {
 
 func Get() Config {
 	if defaultConfig == nil {
-		log.Println("default config is nil")
+		common.L().Info("defaultConfigIsNil")
 		return Config{}
 	}
 	return *defaultConfig
 }
 
 type Config struct {
-	DB          common.DBConfig      `yaml:"db"`
-	UserService common.ServiceConfig `yaml:"user_service"`
-	JWT         JWTConfig            `yaml:"jwt"`
+	DB              common.DBConfig       `yaml:"db"`
+	UserService     common.ServiceConfig  `yaml:"user_service"`
+	JWT             JWTConfig             `yaml:"jwt"`
+	NewUserProducer common.ProducerConfig `yaml:"new_user_producer"`
 }
 
 type JWTConfig struct {

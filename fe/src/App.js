@@ -5,6 +5,7 @@ import Login from './Login'
 import Signup from './Signup'
 import Home from './Home'
 import Transfer from './Transfer'
+import Topup from './Topup'
 
 export default function App() {
   return (
@@ -44,6 +45,9 @@ export default function App() {
           </Route>
           <Route path="/transfer">
             <Transfer/>
+          </Route>
+          <Route path="/topup">
+            <Topup/>
           </Route>
         </Switch>
       </div>

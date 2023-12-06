@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.13.0
-// source: internal/proto/goldenpay.proto
+// source: internal/proto/user_service.proto
 
 package proto
 
@@ -245,127 +245,5 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "internal/proto/goldenpay.proto",
-}
-
-// WalletServiceClient is the client API for WalletService service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type WalletServiceClient interface {
-	Get(ctx context.Context, in *GetWalletReq, opts ...grpc.CallOption) (*GetWalletResp, error)
-	Transfer(ctx context.Context, in *TransferReq, opts ...grpc.CallOption) (*TransferResp, error)
-}
-
-type walletServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewWalletServiceClient(cc grpc.ClientConnInterface) WalletServiceClient {
-	return &walletServiceClient{cc}
-}
-
-func (c *walletServiceClient) Get(ctx context.Context, in *GetWalletReq, opts ...grpc.CallOption) (*GetWalletResp, error) {
-	out := new(GetWalletResp)
-	err := c.cc.Invoke(ctx, "/WalletService/Get", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *walletServiceClient) Transfer(ctx context.Context, in *TransferReq, opts ...grpc.CallOption) (*TransferResp, error) {
-	out := new(TransferResp)
-	err := c.cc.Invoke(ctx, "/WalletService/Transfer", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// WalletServiceServer is the server API for WalletService service.
-// All implementations must embed UnimplementedWalletServiceServer
-// for forward compatibility
-type WalletServiceServer interface {
-	Get(context.Context, *GetWalletReq) (*GetWalletResp, error)
-	Transfer(context.Context, *TransferReq) (*TransferResp, error)
-	mustEmbedUnimplementedWalletServiceServer()
-}
-
-// UnimplementedWalletServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedWalletServiceServer struct {
-}
-
-func (UnimplementedWalletServiceServer) Get(context.Context, *GetWalletReq) (*GetWalletResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
-}
-func (UnimplementedWalletServiceServer) Transfer(context.Context, *TransferReq) (*TransferResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Transfer not implemented")
-}
-func (UnimplementedWalletServiceServer) mustEmbedUnimplementedWalletServiceServer() {}
-
-// UnsafeWalletServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to WalletServiceServer will
-// result in compilation errors.
-type UnsafeWalletServiceServer interface {
-	mustEmbedUnimplementedWalletServiceServer()
-}
-
-func RegisterWalletServiceServer(s grpc.ServiceRegistrar, srv WalletServiceServer) {
-	s.RegisterService(&WalletService_ServiceDesc, srv)
-}
-
-func _WalletService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetWalletReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(WalletServiceServer).Get(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/WalletService/Get",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WalletServiceServer).Get(ctx, req.(*GetWalletReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _WalletService_Transfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TransferReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(WalletServiceServer).Transfer(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/WalletService/Transfer",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WalletServiceServer).Transfer(ctx, req.(*TransferReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-// WalletService_ServiceDesc is the grpc.ServiceDesc for WalletService service.
-// It's only intended for direct use with grpc.RegisterService,
-// and not to be introspected or modified (even as a copy)
-var WalletService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "WalletService",
-	HandlerType: (*WalletServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Get",
-			Handler:    _WalletService_Get_Handler,
-		},
-		{
-			MethodName: "Transfer",
-			Handler:    _WalletService_Transfer_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "internal/proto/goldenpay.proto",
+	Metadata: "internal/proto/user_service.proto",
 }

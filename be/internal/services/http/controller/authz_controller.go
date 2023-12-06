@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,9 +11,19 @@ import (
 	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
-type AuthzReq struct {
-	token string
-}
+type (
+	AuthzReq struct {
+		token string
+	}
+
+	AuthzResp struct {
+		Code *common.Code `json:"code"`
+	}
+
+	AuthzController struct {
+		uclient proto.UserServiceClient
+	}
+)
 
 func (r AuthzReq) toUserServiceLoginReq() *proto.AuthzReq {
 	return &proto.AuthzReq{
@@ -22,19 +31,11 @@ func (r AuthzReq) toUserServiceLoginReq() *proto.AuthzReq {
 	}
 }
 
-type AuthzResp struct {
-	Code *common.Code `json:"code"`
-}
-
-type AuthzController struct {
-	uclient proto.UserServiceClient
-}
-
 func NewAuthzController(client proto.UserServiceClient) *AuthzController {
 	return &AuthzController{uclient: client}
 }
 
-func (c AuthzController) Authz(ctx *gin.Context) {
+func (c AuthzController) Do(ctx *gin.Context) {
 	token, _ := ctx.Cookie(TokenCookie)
 	req := &AuthzReq{
 		token: token,
@@ -55,8 +56,7 @@ func (c AuthzController) Authz(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 
 	if err != nil {
-		log.Printf("failed to login, err=%v", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{})
+		common.L().Errorw("authzErr", "req", req, "err", err)
 		return
 	}
 }

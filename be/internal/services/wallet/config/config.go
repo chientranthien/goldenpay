@@ -1,8 +1,6 @@
 package config
 
 import (
-	"log"
-
 	"github.com/chientranthien/goldenpay/internal/common"
 )
 
@@ -16,14 +14,14 @@ func init() {
 
 func Get() Config {
 	if defaultConfig == nil {
-		log.Println("default config is nil")
+		common.L().Info("defaultConfigIsNil")
 		return Config{}
 	}
 	return *defaultConfig
 }
 
 type Config struct {
-	DB            common.DBConfig      `yaml:"db"`
-	WalletService common.ServiceConfig `yaml:"wallet_service"`
-	Kafka         common.KafkaConfig   `yaml:"kafka"`
+	DB                     common.DBConfig       `yaml:"db"`
+	WalletService          common.ServiceConfig  `yaml:"wallet_service"`
+	NewTransactionProducer common.ProducerConfig `yaml:"new_transaction_producer"`
 }

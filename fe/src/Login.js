@@ -31,16 +31,16 @@ export default function Login() {
   }
 
   return (
-    <div className="container form-container">
+    <div className="container">
       <div className="row justify-content-center">
-        <form className={"form needs-validation" + CSS.FormCol} onSubmit={handleSubmit}>
+        <form className={"form needs-validation " + CSS.FormCol} onSubmit={handleSubmit}>
           <div className="form-floating">
             <input className="form-control" id="email" name="email" type="email" onChange={handleChange}
-                   value={formData.email} required/>
+                   placeholder={""} value={formData.email} required/>
             <label htmlFor="email">Email</label>
           </div>
           <div className="form-floating">
-            <input className="form-control" name="password" type="password" onChange={handleChange}
+            <input className="form-control" name="password" type="password" onChange={handleChange} placeholder={""}
                    value={formData.password} required/>
             <label htmlFor="password">Password</label>
           </div>

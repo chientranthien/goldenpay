@@ -1,11 +1,10 @@
 package dao
 
 import (
-	"log"
-
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
+	"github.com/chientranthien/goldenpay/internal/common"
 	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
@@ -25,18 +24,38 @@ func (d WalletDao) getTransactionDB() *gorm.DB {
 	return d.db.Table("transaction_tab")
 }
 
+func (d WalletDao) getTopupDB() *gorm.DB {
+	return d.db.Table("topup_tab")
+}
+
 func (d WalletDao) Insert(wallet *proto.Wallet) error {
-	return d.getDB().Create(wallet).Error
+	if err := d.getDB().Create(wallet).Error; err != nil {
+		common.L().Errorw("insertErr", "wallet", wallet, "err", err)
+		return err
+	}
+
+	return nil
 }
 
 func (d *WalletDao) Update(wallet *proto.Wallet) error {
-	return d.getDB().Updates(wallet).Error
+	wallet.Mtime = common.NowMillis()
+	wallet.Version++
+	if err := d.getDB().Updates(wallet).Error; err != nil {
+		common.L().Errorw("updateErr", "wallet", wallet, "err", err)
+		return err
+	}
+
+	return nil
 }
 
-
-func (d WalletDao) Begin() *WalletDao {
+func (d WalletDao) Begin() (*WalletDao, error) {
 	trx := d.getDB().Begin()
-	return &WalletDao{db: trx}
+	if err := trx.Error; err != nil {
+		common.L().Errorw("beginErr", "err", err)
+		return nil, err
+	}
+
+	return &WalletDao{db: trx}, nil
 }
 
 func (d WalletDao) CommitOrRollback(commit bool) {
@@ -54,15 +73,11 @@ func (d *WalletDao) GetByUserIDForUpdate(userID uint64) (*proto.Wallet, error) {
 
 	err := d.getDB().Clauses(clause.Locking{Strength: "UPDATE"}).First(w).Error
 	if err != nil {
-		log.Printf("failed to get wallet from DB for update, err=%v", err)
+		common.L().Infow("getByUserIDForUpdateErr", "userID", userID, "err", err)
 		return nil, err
 	}
 
 	return w, nil
-}
-
-func (d WalletDao) InsertTransaction(trans *proto.Transaction) error {
-	return d.getTransactionDB().Create(trans).Error
 }
 
 func (d *WalletDao) Get(id uint64) (*proto.Wallet, error) {
@@ -75,4 +90,62 @@ func (d *WalletDao) Get(id uint64) (*proto.Wallet, error) {
 	}
 
 	return w, nil
+}
+
+func (d *WalletDao) GetByUserID(userID uint64) (*proto.Wallet, error) {
+	w := &proto.Wallet{
+		UserId: userID,
+	}
+
+	err := d.getDB().First(w).Error
+	if err != nil {
+		common.L().Infow("getByUserIDeErr", "userID", userID, "err", err)
+		return nil, err
+	}
+
+	return w, nil
+}
+
+func (d WalletDao) InsertTransaction(trans *proto.Transaction) error {
+	return d.getTransactionDB().Create(trans).Error
+}
+
+func (d WalletDao) InsertTopup(t *proto.Topup) error {
+	return d.getTopupDB().Create(t).Error
+}
+
+func (d *WalletDao) GetTransactionForUpdate(id uint64) (*proto.Transaction, error) {
+	t := &proto.Transaction{
+		Id: id,
+	}
+
+	err := d.getTransactionDB().Clauses(clause.Locking{Strength: "UPDATE"}).First(t).Error
+	if err != nil {
+		common.L().Infow("getTransactionForUpdate", "transactionID", id, "err", err)
+		return nil, err
+	}
+
+	return t, nil
+}
+
+func (d WalletDao) UpdateTransaction(t *proto.Transaction) error {
+	t.Mtime = common.NowMillis()
+	t.Version++
+	if err := d.getTransactionDB().Updates(t).Error; err != nil {
+		common.L().Errorw("updateErr", "transaction", t, "err", err)
+		return err
+	}
+
+	return nil
+}
+
+func (d WalletDao) GetUserTransactions(conds ...clause.Expression) ([]*proto.Transaction, error) {
+
+	var transactions []*proto.Transaction
+	if err := d.getTransactionDB().Clauses(conds...).Find(&transactions).Error; err != nil {
+		common.L().Errorw("getUserTransactionsErr", "conds", conds, "err", err)
+		return nil, err
+	}
+
+	return transactions, nil
 }

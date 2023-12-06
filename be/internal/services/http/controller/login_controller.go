@@ -1,13 +1,11 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"github.com/chientranthien/goldenpay/internal/common"
 	"github.com/chientranthien/goldenpay/internal/proto"
@@ -17,10 +15,47 @@ const (
 	TokenCookie = "token"
 )
 
-type LoginReq struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+type Controller interface {
+	Validate() *common.Code
+	Do(ctx *gin.Context)
+	GetReq() any
+	GetResp() any
 }
+
+type Wrapper struct {
+	c Controller
+}
+
+func (c Wrapper) Do(ctx *gin.Context) {
+	if ctx.BindJSON(c.c.GetReq()) != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+
+	if code := c.c.Validate(); !code.IsSuccess() {
+		resp := &LoginResp{
+			Code: code,
+		}
+		ctx.JSON(http.StatusOK, resp)
+		return
+	}
+
+	c.c.Do(ctx)
+}
+
+type (
+	LoginReq struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	LoginResp struct {
+		Code *common.Code `json:"code"`
+	}
+
+	LoginController struct {
+		uClient proto.UserServiceClient
+	}
+)
 
 func (r LoginReq) toUserServiceLoginReq() *proto.LoginReq {
 	return &proto.LoginReq{
@@ -29,19 +64,11 @@ func (r LoginReq) toUserServiceLoginReq() *proto.LoginReq {
 	}
 }
 
-type LoginResp struct {
-	Code *common.Code `json:"code"`
-}
-
-type LoginController struct {
-	uClient proto.UserServiceClient
-}
-
 func NewLoginController(client proto.UserServiceClient) *LoginController {
 	return &LoginController{uClient: client}
 }
 
-func (c LoginController) Login(ctx *gin.Context) {
+func (c LoginController) Do(ctx *gin.Context) {
 	req := &LoginReq{}
 	if ctx.BindJSON(req) != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
@@ -67,8 +94,7 @@ func (c LoginController) Login(ctx *gin.Context) {
 
 	serviceResp, err := c.uClient.Login(common.Ctx(), req.toUserServiceLoginReq())
 
-	code := status.Code(err)
-	resp := &LoginResp{Code: common.GetCode(int32(code))}
+	resp := &LoginResp{Code: common.GetCodeFromErr(err)}
 	if resp.Code.IsSuccess() {
 		ctx.SetCookie(TokenCookie, serviceResp.Token, int(3*24*time.Hour.Seconds()), "/", "", false, false)
 	}
@@ -76,8 +102,7 @@ func (c LoginController) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 
 	if err != nil {
-		log.Printf("failed to login, err=%v", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{})
+		common.L().Errorw("loginErr", "req", req, "err", err)
 		return
 	}
 }

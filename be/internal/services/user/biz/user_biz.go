@@ -3,9 +3,9 @@ package biz
 import (
 	"crypto/sha256"
 	"fmt"
-	"log"
 	"time"
 
+	"github.com/IBM/sarama"
 	"github.com/dgrijalva/jwt-go"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -17,16 +17,26 @@ import (
 )
 
 type UserBiz struct {
-	jwtConfig config.JWTConfig
-	dao       *dao.UserDao
+	jwtConfig      config.JWTConfig
+	dao            *dao.UserDao
+	producer       sarama.SyncProducer
+	producerConfig common.ProducerConfig
 }
 
 func NewUserBiz(
 	jwtConfig config.JWTConfig,
 	dao *dao.UserDao,
+	producer sarama.SyncProducer,
+	producerConfig common.ProducerConfig,
 ) *UserBiz {
-	return &UserBiz{jwtConfig: jwtConfig, dao: dao}
+	return &UserBiz{
+		jwtConfig: jwtConfig,
+		dao: dao,
+		producer: producer,
+		producerConfig: producerConfig,
+	}
 }
+
 
 func (b UserBiz) Signup(req *proto.SignupReq) (*proto.SignupResp, error) {
 	user := &proto.User{
@@ -44,7 +54,47 @@ func (b UserBiz) Signup(req *proto.SignupReq) (*proto.SignupResp, error) {
 		return nil, err
 	}
 
+	e := &proto.NewUserEvent{
+		UserId:    user.Id,
+		EventTime: common.NowMicro(),
+	}
+
+	msg := &sarama.ProducerMessage{
+		Topic: b.producerConfig.Topic,
+		Value: sarama.ByteEncoder(common.ToJsonIgnoreErr(e)),
+	}
+
+	partition, offset, produceErr := b.producer.SendMessage(msg)
+	common.L().Infow(
+		"sentNewUserEvent",
+		"partition", partition,
+		"offset", offset,
+		"err", produceErr,
+	)
+
 	return &proto.SignupResp{}, nil
+}
+func (b UserBiz) Login(req *proto.LoginReq) (*proto.LoginResp, error) {
+	getResp, err := b.GetByEmail(&proto.GetByEmailReq{Email: req.Email})
+	if err != nil {
+		return nil, status.New(codes.Internal, "unable to get user").Err()
+	}
+	user := getResp.User
+
+	if user.Id == 0 {
+		return nil, status.New(codes.NotFound, "not found").Err()
+	}
+
+	if user.HashedPassword != b.HashPassword(req.Password) {
+		return nil, status.New(codes.InvalidArgument, "incorrect password").Err()
+	}
+
+	token, err := b.GenerateToken(user)
+	if err != nil {
+		return nil, status.New(codes.Internal, "unable to generate token").Err()
+	}
+
+	return &proto.LoginResp{Token: token}, nil
 }
 
 func (b UserBiz) Get(id uint64) (*proto.User, error) {
@@ -56,7 +106,7 @@ func (b UserBiz) Get(id uint64) (*proto.User, error) {
 	return user, nil
 }
 
-func (b UserBiz) GetByEmail(req *proto.GetByEmailReq ) (*proto.GetByEmailResp, error) {
+func (b UserBiz) GetByEmail(req *proto.GetByEmailReq) (*proto.GetByEmailResp, error) {
 	user, err := b.dao.GetByEmail(req.Email)
 	if err != nil {
 		return nil, err
@@ -80,7 +130,12 @@ func (b UserBiz) GenerateToken(user *proto.User) (string, error) {
 
 	tokenString, err := token.SignedString([]byte(b.jwtConfig.Secret))
 	if err != nil {
-		log.Printf("failed to create token, err=%v", err)
+		common.L().Errorw(
+			"generateTokenErr",
+			"userID", user.Id,
+			"jwtConfig", b.jwtConfig,
+			"err", err,
+		)
 		return "", err
 	}
 
@@ -98,7 +153,11 @@ func (b UserBiz) ParseToken(tokenStr string) (*jwt.StandardClaims, error) {
 	})
 
 	if err != nil {
-		log.Printf("failed to parse token, tokenStr=%v, err=%v", tokenStr, err)
+		common.L().Errorw(
+			"parseTokenErr",
+			"tokenStr", tokenStr,
+			"err", err,
+		)
 		return nil, err
 	}
 

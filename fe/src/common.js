@@ -19,6 +19,21 @@ export default function Common() {
   return common
 }
 
+export function RedirectToLoginIfNotAuthenticated() {
+  const token = Cookies.get(Constants.CookieToken);
+  const history = useHistory()
+  if (token == "" || token == undefined || token == null) {
+    history.push('/login');
+  }
+
+  UserService().Authz().then((c) => {
+    if (c.id != 0) {
+      history.push('/login');
+      return
+    }
+  });
+}
+
 export function RedirectToHomeIfAlreadyAuthenticated() {
   const history = useHistory()
   const memoizedAuthz = useCallback(() => {
@@ -38,6 +53,10 @@ export function RedirectToHomeIfAlreadyAuthenticated() {
   useEffect(() => {
     memoizedAuthz();
   }, [])
+}
+
+export function RemoveTokenCookie() {
+  Cookies.remove(Constants.CookieToken)
 }
 
 export const Constants = {

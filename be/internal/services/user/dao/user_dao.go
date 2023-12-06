@@ -3,6 +3,7 @@ package dao
 import (
 	"gorm.io/gorm"
 
+	"github.com/chientranthien/goldenpay/internal/common"
 	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
@@ -32,6 +33,11 @@ func (d *UserDao) GetByEmail(email string) (*proto.User, error) {
 	}
 
 	if err := d.getDB().Where(u).First(u).Error; err != nil {
+		common.L().Errorw(
+			"getByEmailErr",
+			"email", email,
+			"err", err,
+		)
 		return nil, err
 	}
 
@@ -44,6 +50,11 @@ func (d *UserDao) Get(userID uint64) (*proto.User, error) {
 	}
 
 	if err := d.getDB().First(u).Error; err != nil {
+		common.L().Errorw(
+			"getByUserIdErr",
+			"userID", userID,
+			"err", err,
+		)
 		return nil, err
 	}
 

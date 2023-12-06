@@ -33,10 +33,17 @@ func (c DBConfig) GetDSN() string {
 	return conf.FormatDSN()
 }
 
-type KafkaConfig struct {
+type ProducerConfig struct {
 	Addrs   []string `yaml:"addrs"`
 	Version string   `yaml:"version"`
 	Topic   string   `yaml:"topic"`
+}
+
+type ConsumerConfig struct {
+	Addrs         []string `yaml:"addrs"`
+	Version       string   `yaml:"version"`
+	Topic         string `yaml:"topic"`
+	ConsumerGroup string   `yaml:"consumer_group"`
 }
 
 type ServiceConfig struct {

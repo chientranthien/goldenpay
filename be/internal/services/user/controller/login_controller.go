@@ -23,26 +23,8 @@ func (c LoginController) Login(_ context.Context, req *proto.LoginReq) (*proto.L
 		return nil, err
 	}
 
-	getResp, err := c.biz.GetByEmail(&proto.GetByEmailReq{Email: req.Email})
-	if err != nil {
-		return nil, status.New(codes.Internal, "unable to get user").Err()
-	}
-	user := getResp.User
 
-	if user.Id == 0 {
-		return nil, status.New(codes.NotFound, "not found").Err()
-	}
-
-	if user.HashedPassword != c.biz.HashPassword(req.Password) {
-		return nil, status.New(codes.InvalidArgument, "incorrect password").Err()
-	}
-
-	token, err := c.biz.GenerateToken(user)
-	if err != nil {
-		return nil, status.New(codes.Internal, "unable to generate token").Err()
-	}
-
-	return &proto.LoginResp{Token: token}, nil
+	return c.biz.Login(req)
 }
 
 func (c LoginController) validate(req *proto.LoginReq) error {

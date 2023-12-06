@@ -10,4 +10,26 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     ports:
-      - 13306:3306
+      - 53306:3306
+  zk:
+    image: "bitnami/zookeeper:3.6.0"
+    restart: always
+    ports:
+      - "52181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: "bitnami/kafka:3.6.0"
+    ports:
+      - "59092:9092"
+    restart: always
+    environment:
+      - "KAFKA_CFG_ZOOKEEPER_CONNECT=zk:2181"
+      - "ALLOW_PLAINTEXT_LISTENER=yes"
+      - "KAFKA_CFG_LISTENERS=EXTER://kafka:9092,INTER://kafka:9093"
+      - "KAFKA_CFG_ADVERTISED_LISTENERS=EXTER://localhost:59092,INTER://kafka:9092"
+      - "KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=INTER:PLAINTEXT,EXTER:PLAINTEXT"
+      - "KAFKA_CFG_INTER_BROKER_LISTENER_NAME=INTER"
+      - "KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true"
+    depends_on:
+      - zk

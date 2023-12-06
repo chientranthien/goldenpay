@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,11 +11,21 @@ import (
 	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
-type SignupReq struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
-}
+type (
+	SignupReq struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+		Name     string `json:"name"`
+	}
+
+	SignupResp struct {
+		Code *common.Code `json:"code"`
+	}
+
+	SignupController struct {
+		uclient proto.UserServiceClient
+	}
+)
 
 func (r SignupReq) toUserServiceSignupReq() *proto.SignupReq {
 	return &proto.SignupReq{
@@ -26,19 +35,11 @@ func (r SignupReq) toUserServiceSignupReq() *proto.SignupReq {
 	}
 }
 
-type SignupResp struct {
-	Code *common.Code `json:"code"`
-}
-
-type SignupController struct {
-	uclient proto.UserServiceClient
-}
-
 func NewSignupController(client proto.UserServiceClient) *SignupController {
 	return &SignupController{uclient: client}
 }
 
-func (c SignupController) Signup(ctx *gin.Context) {
+func (c SignupController) Do(ctx *gin.Context) {
 	req := &SignupReq{}
 	if ctx.BindJSON(req) != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
@@ -61,7 +62,7 @@ func (c SignupController) Signup(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, resp)
 	if err != nil {
-		log.Printf("failed to signup, req=%v, err=%v", err)
+		common.L().Errorw("signupErr", "req", req, "err", err)
 		return
 	}
 }

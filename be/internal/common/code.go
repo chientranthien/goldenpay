@@ -43,6 +43,10 @@ var (
 		Id:  int32(codes.Unauthenticated),
 		Msg: "unauthenticated",
 	}
+	CodeProceeded = &Code{
+		Id:  18,
+		Msg: "proceeded",
+	}
 
 	AllCodes = map[int32]*Code{
 		CodeExisted.Id:         CodeExisted,
@@ -51,6 +55,7 @@ var (
 		CodeNotFound.Id:        CodeNotFound,
 		CodeInvalidArgument.Id: CodeInvalidArgument,
 		CodeUnauthenticated.Id: CodeUnauthenticated,
+		CodeProceeded.Id:       CodeProceeded,
 	}
 )
 
@@ -63,6 +68,5 @@ func GetCode(c int32) *Code {
 	return codeObj
 }
 func GetCodeFromErr(e error) *Code {
-
 	return GetCode(int32(status.Code(e)))
 }

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,23 +10,26 @@ import (
 	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
-type TransferReq struct {
-	ToEmail string `json:"to_email,omitempty"`
-	Amount  int64  `json:"amount,omitempty"`
-}
+type (
+	TransferReq struct {
+		ToEmail string `json:"to_email"`
+		Amount  int64  `json:"amount"`
+	}
 
-type TransferResp struct {
-	Code        *common.Code `json:"code"`
-	Transaction Transaction  `json:"transaction"`
-}
-type Transaction struct {
-	id uint64 `json:"id"`
-}
+	TransferResp struct {
+		Code        *common.Code `json:"code"`
+		Transaction Transaction  `json:"transaction"`
+	}
 
-type TransferController struct {
-	uClient proto.UserServiceClient
-	wClient proto.WalletServiceClient
-}
+	Transaction struct {
+		id uint64 `json:"id"`
+	}
+
+	TransferController struct {
+		uClient proto.UserServiceClient
+		wClient proto.WalletServiceClient
+	}
+)
 
 func NewTransferController(
 	uClient proto.UserServiceClient,
@@ -36,7 +38,7 @@ func NewTransferController(
 	return &TransferController{uClient: uClient, wClient: wClient}
 }
 
-func (c TransferController) Transfer(ctx gin.Context) {
+func (c TransferController) Do(ctx *gin.Context) {
 	req := &TransferReq{}
 	if ctx.BindJSON(req) != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
@@ -83,16 +85,16 @@ func (c TransferController) Transfer(ctx gin.Context) {
 		ToUser:   toUser.Id,
 		Amount:   req.Amount,
 	})
-	ctx.JSON(
-		http.StatusOK,
-		&TransferResp{
-			Code:        common.GetCodeFromErr(err),
-			Transaction: Transaction{id: transferResp.TransactionId},
-		},
-	)
+	resp := &TransferResp{
+		Code: common.GetCodeFromErr(err),
+	}
+	if transferResp != nil {
+		resp.Transaction = Transaction{id: transferResp.TransactionId}
+	}
+	ctx.JSON(http.StatusOK, resp)
 
 	if err != nil {
-		log.Printf("failed to transfer, err=%v", err)
+		common.L().Errorw("transferErr", "req", req, "err", err)
 		return
 	}
 }

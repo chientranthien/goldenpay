@@ -76,7 +76,7 @@ export default function Signup() {
 
   return (
 
-    <div className="container form-container">
+    <div className="container">
       <div className="row justify-content-center">
         <form onSubmit={handleSubmit} className="form needs-validation col-lg-6 col-md-8 col-sm-12 col-xs-12">
           <div className="form-floating">

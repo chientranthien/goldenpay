@@ -1,12 +1,12 @@
 package client
 
 import (
-	"log"
 	"sync"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	"github.com/chientranthien/goldenpay/internal/common"
 	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
@@ -17,11 +17,15 @@ var (
 
 func NewUserServiceClient(addr string) proto.UserServiceClient {
 	clientOnce.Do(func() {
-		conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		conn, err := grpc.Dial(
+			addr,
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			common.ClientLoggingInterceptor,
+		)
 		if err != nil {
-			log.Fatalf("failed to dial, add=%v, err=%v", addr, err)
+			common.L().Errorw("dialErr", "addr", addr, "err", err)
 		} else {
-			log.Printf("dialed to addr=%v", addr)
+			common.L().Infow("dialed", "addr", addr)
 		}
 
 		client = proto.NewUserServiceClient(conn)

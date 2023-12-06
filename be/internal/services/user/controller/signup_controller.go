@@ -5,6 +5,7 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 
 	"github.com/chientranthien/goldenpay/internal/proto"
 	"github.com/chientranthien/goldenpay/internal/services/user/biz"
@@ -35,13 +36,12 @@ func (c SignupController) validate(req *proto.SignupReq) error {
 		return status.New(codes.InvalidArgument, "invalid email or password").Err()
 	}
 
-	getResp, err := c.biz.GetByEmail(&proto.GetByEmailReq{Email: req.Email})
-	if err != nil {
+	_, err := c.biz.GetByEmail(&proto.GetByEmailReq{Email: req.Email})
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return status.New(codes.Internal, "failed to get user").Err()
 	}
-	user := getResp.User
 
-	if user != nil && user.Id != 0 {
+	if err == nil {
 		return status.New(codes.InvalidArgument, "existed user").Err()
 	}
 

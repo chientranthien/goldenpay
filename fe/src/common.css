@@ -69,3 +69,22 @@ label + a {
     background-color: #f0f7fd;
     border-color: #d0e3f0;
 }
+
+.btn {
+    font-weight: 500;
+}
+
+.card{
+    border-width: 2px;
+    margin-bottom: 10px;
+    border-radius: 15px;
+    border-color: transparent;
+}
+
+.card-body span +span {
+    margin-left: 5px;
+}
+
+.btn + .btn {
+    margin-left: 5px;
+}

@@ -1,8 +1,5 @@
 import React from 'react'
-
-const config = {
-  host: "http://localhost:5000/api/v1/"
-}
+import {config, ToJSON} from './common'
 
 const userService = {}
 userService.Login = async function (email, password) {
@@ -19,7 +16,7 @@ userService.Login = async function (email, password) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(body)
+      body: ToJSON(body)
     }
   ).then(resp => {
     return resp.json()
@@ -43,7 +40,7 @@ userService.Authz = async function () {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(body)
+      body: ToJSON(body)
     }
   ).then(resp => {
     return resp.json()
@@ -71,7 +68,7 @@ userService.Signup = async function (email, password, name) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(body)
+      body: ToJSON(body)
     }
   ).then(resp => resp.json())
     .then(json => {

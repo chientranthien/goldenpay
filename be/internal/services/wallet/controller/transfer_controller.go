@@ -17,7 +17,7 @@ func NewTransferController(biz *biz.WalletBiz) *TransferController {
 }
 
 
-func (c TransferController) Transfer(req *proto.TransferReq) (*proto.TransferResp, error) {
+func (c TransferController) Do(req *proto.TransferReq) (*proto.TransferResp, error) {
 	if err := c.validate(req); err != nil {
 		return nil, err
 	}

@@ -1,8 +1,6 @@
 package config
 
 import (
-	"log"
-
 	"github.com/chientranthien/goldenpay/internal/common"
 )
 
@@ -14,9 +12,9 @@ func init() {
 	common.GetDefaultConfig(defaultConfig)
 }
 
-func GetDefaultConfig() Config {
+func Get() Config {
 	if defaultConfig == nil {
-		log.Println("default config is nil")
+		common.L().Info("defaultConfigIsNil")
 		return Config{}
 	}
 	return *defaultConfig
