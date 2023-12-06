@@ -1,0 +1,19 @@
+user_service:
+  addr: localhost:5001
+wallet_service:
+  addr: localhost:5002
+
+general:
+  initial_balance: 100
+
+new_user_consumer:
+  addrs: [ "localhost:59092" ]
+  version: 3.6.0
+  topic: new_user_event
+  consumer_group: event_handler
+
+new_transaction_consumer:
+  addrs: [ "localhost:59092" ]
+  version: 3.6.0
+  topic: new_transaction_event
+  consumer_group: event_handler

@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+option go_package = "./internal/proto";
+
+service UserService {
+  rpc Signup(SignupReq) returns (SignupResp){}
+  rpc Login(LoginReq) returns (LoginResp){}
+  rpc Authz(AuthzReq) returns (AuthzResp){}
+  rpc Get(GetUserReq) returns (GetUserResp){}
+  rpc GetByEmail(GetByEmailReq) returns (GetByEmailResp){}
+}
+
+message GetByEmailReq {
+  string email = 1;
+}
+
+message GetByEmailResp {
+  User user = 1;
+}
+
+message SignupReq {
+  string email = 1;
+  string password = 2;
+  string name = 3;
+}
+
+message SignupResp {
+}
+
+message LoginReq {
+  string email = 1;
+  string password = 2;
+}
+
+message LoginResp {
+  string token = 1;
+}
+
+message AuthzReq {
+  string token = 1;
+  string resource = 2;
+}
+
+message AuthzMetadata {
+  uint64 user_id = 1;
+}
+
+message AuthzResp {
+  AuthzMetadata metadata = 1;
+}
+
+message GetUserReq {
+  uint64 id = 1;
+}
+
+message GetUserResp {
+  User user = 1;
+}
+
+message User {
+  uint64 id = 1;
+  string email = 2;
+  string hashed_password = 3;
+  string name = 4;
+  uint64 status = 5;
+  uint64 version = 6;
+  uint64 ctime = 7;
+  uint64 mtime = 8;
+}
+
+message NewUserEvent {
+  uint64 user_id = 1;
+  uint64 event_time = 2;
+}
