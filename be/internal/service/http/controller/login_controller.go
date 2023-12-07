@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -12,7 +13,8 @@ import (
 )
 
 const (
-	TokenCookie = "token"
+	TokenCookie  = "token"
+	UserIdCookie = "uid"
 )
 
 type Controller interface {
@@ -48,8 +50,14 @@ type (
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
+
+	LoginData struct {
+		UserId uint64 `json:"user_id"`
+	}
+
 	LoginResp struct {
 		Code *common.Code `json:"code"`
+		Data LoginData    `json:"data"`
 	}
 
 	LoginController struct {
@@ -92,11 +100,20 @@ func (c LoginController) Do(ctx *gin.Context) {
 		}
 	}
 
-	serviceResp, err := c.uClient.Login(common.Ctx(), req.toUserServiceLoginReq())
+	loginResp, err := c.uClient.Login(common.Ctx(), req.toUserServiceLoginReq())
 
 	resp := &LoginResp{Code: common.GetCodeFromErr(err)}
 	if resp.Code.IsSuccess() {
-		ctx.SetCookie(TokenCookie, serviceResp.Token, int(3*24*time.Hour.Seconds()), "/", "", false, false)
+		ctx.SetCookie(TokenCookie, loginResp.Token, int(3*24*time.Hour.Seconds()), "/", "", false, false)
+		ctx.SetCookie(
+			UserIdCookie,
+			fmt.Sprintf("%d", loginResp.UserId),
+			int(3*24*time.Hour.Seconds()),
+			"/",
+			"",
+			false,
+			false,
+		)
 	}
 
 	ctx.JSON(http.StatusOK, resp)

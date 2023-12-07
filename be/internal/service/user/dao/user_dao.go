@@ -60,3 +60,16 @@ func (d *UserDao) Get(userID uint64) (*proto.User, error) {
 
 	return u, nil
 }
+
+func (d UserDao) GetBatch(ids []uint64) ([]*proto.User, error) {
+	var users []*proto.User
+	if err := d.getDB().Find(&users, ids).Error; err != nil {
+		common.L().Errorw("getBatchErr",
+			"ids", ids,
+			"err", err,
+		)
+		return nil, err
+	}
+
+	return users, nil
+}

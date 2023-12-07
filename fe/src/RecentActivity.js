@@ -11,11 +11,10 @@ export default function RecentActivity() {
         if (resp.code != undefined && resp.code.id == 0) {
           setTransactions(prev => {
             const rs = [...prev]
-            rs.push(...resp.data.transactions.map(e => <Activity name={e.name} amount={e.amount} status={e.status}
-                                                                 ctime={e.ctime}/>))
+            rs.push(...resp.data.transactions.map(e => <Activity key={e.id} from={e.from} to={e.to} amount={e.amount}
+                                                                 status={e.status} ctime={e.ctime}/>))
             return rs
           })
-          console.log("aaa", resp.data.nextPagination)
           setPagination(prev => resp.data.nextPagination)
         }
       }

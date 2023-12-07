@@ -59,8 +59,13 @@ export function RemoveTokenCookie() {
   Cookies.remove(Constants.CookieToken)
 }
 
+export function GetUserIdFromCookie() {
+  return Cookies.get(Constants.CookieUserId)
+}
+
 export const Constants = {
-  CookieToken: "token"
+  CookieToken: "token",
+  CookieUserId: "uid"
 }
 
 export const CSS = {

@@ -17,11 +17,11 @@ type (
 	}
 
 	TransferResp struct {
-		Code        *common.Code `json:"code"`
-		Transaction Transaction  `json:"transaction"`
+		Code        *common.Code        `json:"code"`
+		Transaction TransferTransaction `json:"transaction"`
 	}
 
-	Transaction struct {
+	TransferTransaction struct {
 		id uint64 `json:"id"`
 	}
 
@@ -89,7 +89,7 @@ func (c TransferController) Do(ctx *gin.Context) {
 		Code: common.GetCodeFromErr(err),
 	}
 	if transferResp != nil {
-		resp.Transaction = Transaction{id: transferResp.TransactionId}
+		resp.Transaction = TransferTransaction{id: transferResp.TransactionId}
 	}
 	ctx.JSON(http.StatusOK, resp)
 

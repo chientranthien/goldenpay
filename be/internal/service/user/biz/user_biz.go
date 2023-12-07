@@ -30,13 +30,12 @@ func NewUserBiz(
 	producerConfig common.ProducerConfig,
 ) *UserBiz {
 	return &UserBiz{
-		jwtConfig: jwtConfig,
-		dao: dao,
-		producer: producer,
+		jwtConfig:      jwtConfig,
+		dao:            dao,
+		producer:       producer,
 		producerConfig: producerConfig,
 	}
 }
-
 
 func (b UserBiz) Signup(req *proto.SignupReq) (*proto.SignupResp, error) {
 	user := &proto.User{
@@ -94,7 +93,7 @@ func (b UserBiz) Login(req *proto.LoginReq) (*proto.LoginResp, error) {
 		return nil, status.New(codes.Internal, "unable to generate token").Err()
 	}
 
-	return &proto.LoginResp{Token: token}, nil
+	return &proto.LoginResp{Token: token, UserId: getResp.User.Id}, nil
 }
 
 func (b UserBiz) Get(id uint64) (*proto.User, error) {
@@ -173,4 +172,22 @@ func (b UserBiz) ParseToken(tokenStr string) (*jwt.StandardClaims, error) {
 	}
 
 	return claims, nil
+}
+
+func (b UserBiz) GetBatch(ids []uint64) (*proto.GetBatchResp, error) {
+	usersFromDB, err := b.dao.GetBatch(ids)
+	if err != nil {
+		return nil, status.New(codes.Internal, "unable to query DB").Err()
+	}
+
+	userMap := make(map[uint64]*proto.User)
+	for _, user := range usersFromDB {
+		userMap[user.Id] = user
+	}
+	users := make([]*proto.User, len(ids))
+	for i, id := range ids {
+		users[i] = userMap[id]
+	}
+
+	return &proto.GetBatchResp{Users: users}, nil
 }

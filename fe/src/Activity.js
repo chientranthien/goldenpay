@@ -1,4 +1,5 @@
 import React from "react";
+import {GetUserIdFromCookie} from "./common";
 
 export default function Activity(props) {
   let badge = "warning"
@@ -14,16 +15,30 @@ export default function Activity(props) {
   const DATE_OPTIONS = {weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'};
   let d = new Date(props.ctime).toLocaleDateString('en-US', DATE_OPTIONS)
 
+  let card
+  if (props.from.id == GetUserIdFromCookie()) {
+     card = <div className="card-body">
+      <h5 className="card-title">To: {props.to.name}</h5>
+      <div>
+        <span className={"badge text-bg-" + badge}>{statusText}</span>
+        <span className="text-body-secondary">{d}</span>
+      </div>
+      <p className="card-text text-danger">-${props.amount}</p>
+    </div>
+  } else {
+    card = <div className="card-body">
+      <h5 className="card-title">From: {props.from.name}</h5>
+      <div>
+        <span className={"badge text-bg-" + badge}>{statusText}</span>
+        <span className="text-body-secondary">{d}</span>
+      </div>
+      <p className="card-text text-success">+${props.amount}</p>
+    </div>
+
+  }
   return (
     <div className="card">
-      <div className="card-body">
-        <h5 className="card-title">To: {props.name}</h5>
-        <div>
-          <span className={"badge text-bg-" + badge}>{statusText}</span>
-          <span className="text-body-secondary">{d}</span>
-        </div>
-        <p className="card-text">$ {props.amount}</p>
-      </div>
+      {card}
     </div>
   )
 }

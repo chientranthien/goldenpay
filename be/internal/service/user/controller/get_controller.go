@@ -15,13 +15,13 @@ func NewGetController(biz *biz.UserBiz) *GetController {
 	return &GetController{biz: biz}
 }
 
-func (c GetController) Get(_ context.Context, req *proto.GetUserReq) (*proto.GetUserResp, error) {
+func (c GetController) Do(_ context.Context, req *proto.GetReq) (*proto.GetResp, error) {
 	user, err := c.biz.Get(req.Id)
 	if err != nil {
 		return nil, err
 	}
-	resp := &proto.GetUserResp{
-		User: (*proto.User)(user),
+	resp := &proto.GetResp{
+		User: user,
 	}
 
 	return resp, nil

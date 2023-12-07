@@ -25,7 +25,8 @@ type UserServiceClient interface {
 	Signup(ctx context.Context, in *SignupReq, opts ...grpc.CallOption) (*SignupResp, error)
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 	Authz(ctx context.Context, in *AuthzReq, opts ...grpc.CallOption) (*AuthzResp, error)
-	Get(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error)
+	Get(ctx context.Context, in *GetReq, opts ...grpc.CallOption) (*GetResp, error)
+	GetBatch(ctx context.Context, in *GetBatchReq, opts ...grpc.CallOption) (*GetBatchResp, error)
 	GetByEmail(ctx context.Context, in *GetByEmailReq, opts ...grpc.CallOption) (*GetByEmailResp, error)
 }
 
@@ -64,9 +65,18 @@ func (c *userServiceClient) Authz(ctx context.Context, in *AuthzReq, opts ...grp
 	return out, nil
 }
 
-func (c *userServiceClient) Get(ctx context.Context, in *GetUserReq, opts ...grpc.CallOption) (*GetUserResp, error) {
-	out := new(GetUserResp)
+func (c *userServiceClient) Get(ctx context.Context, in *GetReq, opts ...grpc.CallOption) (*GetResp, error) {
+	out := new(GetResp)
 	err := c.cc.Invoke(ctx, "/UserService/Get", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetBatch(ctx context.Context, in *GetBatchReq, opts ...grpc.CallOption) (*GetBatchResp, error) {
+	out := new(GetBatchResp)
+	err := c.cc.Invoke(ctx, "/UserService/GetBatch", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +99,8 @@ type UserServiceServer interface {
 	Signup(context.Context, *SignupReq) (*SignupResp, error)
 	Login(context.Context, *LoginReq) (*LoginResp, error)
 	Authz(context.Context, *AuthzReq) (*AuthzResp, error)
-	Get(context.Context, *GetUserReq) (*GetUserResp, error)
+	Get(context.Context, *GetReq) (*GetResp, error)
+	GetBatch(context.Context, *GetBatchReq) (*GetBatchResp, error)
 	GetByEmail(context.Context, *GetByEmailReq) (*GetByEmailResp, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
@@ -107,8 +118,11 @@ func (UnimplementedUserServiceServer) Login(context.Context, *LoginReq) (*LoginR
 func (UnimplementedUserServiceServer) Authz(context.Context, *AuthzReq) (*AuthzResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authz not implemented")
 }
-func (UnimplementedUserServiceServer) Get(context.Context, *GetUserReq) (*GetUserResp, error) {
+func (UnimplementedUserServiceServer) Get(context.Context, *GetReq) (*GetResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedUserServiceServer) GetBatch(context.Context, *GetBatchReq) (*GetBatchResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBatch not implemented")
 }
 func (UnimplementedUserServiceServer) GetByEmail(context.Context, *GetByEmailReq) (*GetByEmailResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetByEmail not implemented")
@@ -181,7 +195,7 @@ func _UserService_Authz_Handler(srv interface{}, ctx context.Context, dec func(i
 }
 
 func _UserService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserReq)
+	in := new(GetReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -193,7 +207,25 @@ func _UserService_Get_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/UserService/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).Get(ctx, req.(*GetUserReq))
+		return srv.(UserServiceServer).Get(ctx, req.(*GetReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetBatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBatchReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetBatch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UserService/GetBatch",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetBatch(ctx, req.(*GetBatchReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -238,6 +270,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _UserService_Get_Handler,
+		},
+		{
+			MethodName: "GetBatch",
+			Handler:    _UserService_GetBatch_Handler,
 		},
 		{
 			MethodName: "GetByEmail",

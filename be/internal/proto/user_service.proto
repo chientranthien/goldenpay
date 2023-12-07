@@ -6,7 +6,8 @@ service UserService {
   rpc Signup(SignupReq) returns (SignupResp){}
   rpc Login(LoginReq) returns (LoginResp){}
   rpc Authz(AuthzReq) returns (AuthzResp){}
-  rpc Get(GetUserReq) returns (GetUserResp){}
+  rpc Get(GetReq) returns (GetResp){}
+  rpc GetBatch(GetBatchReq) returns (GetBatchResp){}
   rpc GetByEmail(GetByEmailReq) returns (GetByEmailResp){}
 }
 
@@ -34,6 +35,7 @@ message LoginReq {
 
 message LoginResp {
   string token = 1;
+  uint64 user_id = 2;
 }
 
 message AuthzReq {
@@ -49,12 +51,20 @@ message AuthzResp {
   AuthzMetadata metadata = 1;
 }
 
-message GetUserReq {
+message GetReq {
   uint64 id = 1;
 }
 
-message GetUserResp {
+message GetResp {
   User user = 1;
+}
+
+message GetBatchReq {
+  repeated uint64 ids = 1;
+}
+
+message GetBatchResp {
+  repeated User users = 1;
 }
 
 message User {

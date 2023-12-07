@@ -13,12 +13,13 @@ import (
 
 type Server struct {
 	proto.UnimplementedUserServiceServer
-	conf common.ServiceConfig
-	*controller.SignupController
-	*controller.LoginController
-	*controller.GetController
-	*controller.AuthzController
-	*controller.GetByEmailController
+	conf                 common.ServiceConfig
+	signupController     *controller.SignupController
+	loginController      *controller.LoginController
+	getController        *controller.GetController
+	getBatchController   *controller.GetBatchController
+	authzController      *controller.AuthzController
+	getByEmailController *controller.GetByEmailController
 }
 
 func NewServer(
@@ -26,37 +27,43 @@ func NewServer(
 	signupController *controller.SignupController,
 	loginController *controller.LoginController,
 	getController *controller.GetController,
+	getBatchController *controller.GetBatchController,
 	authzController *controller.AuthzController,
 	getByEmailController *controller.GetByEmailController,
 ) *Server {
 	return &Server{
-		conf:                 conf,
-		SignupController:     signupController,
-		LoginController:      loginController,
-		GetController:        getController,
-		AuthzController:      authzController,
-		GetByEmailController: getByEmailController,
+		conf: conf,
+		signupController: signupController,
+		loginController: loginController,
+		getController: getController,
+		getBatchController: getBatchController,
+		authzController: authzController,
+		getByEmailController: getByEmailController,
 	}
 }
 
 func (s Server) Signup(ctx context.Context, req *proto.SignupReq) (*proto.SignupResp, error) {
-	return s.SignupController.Signup(ctx, req)
+	return s.signupController.Signup(ctx, req)
 }
 
 func (s Server) Login(ctx context.Context, req *proto.LoginReq) (*proto.LoginResp, error) {
-	return s.LoginController.Login(ctx, req)
+	return s.loginController.Login(ctx, req)
 }
 
-func (s Server) Get(ctx context.Context, req *proto.GetUserReq) (*proto.GetUserResp, error) {
-	return s.GetController.Get(ctx, req)
+func (s Server) Get(ctx context.Context, req *proto.GetReq) (*proto.GetResp, error) {
+	return s.getController.Do(ctx, req)
+}
+
+func (s Server) GetBatch(ctx context.Context, req *proto.GetBatchReq) (*proto.GetBatchResp, error) {
+	return s.getBatchController.Do(ctx, req)
 }
 
 func (s Server) Authz(ctx context.Context, req *proto.AuthzReq) (*proto.AuthzResp, error) {
-	return s.AuthzController.Authz(ctx, req)
+	return s.authzController.Authz(ctx, req)
 }
 
 func (s Server) GetByEmail(ctx context.Context, req *proto.GetByEmailReq) (*proto.GetByEmailResp, error) {
-	return s.GetByEmailController.GetByEmail(req)
+	return s.getByEmailController.GetByEmail(req)
 }
 
 func (s Server) Serve() {

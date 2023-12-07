@@ -20,9 +20,24 @@ type (
 		Pagination *Pagination `json:"pagination"`
 	}
 
+	User struct {
+		Id    uint64 `json:"id"`
+		Name  string `json:"name"`
+		Email string `json:"email"`
+	}
+
+	Transaction struct {
+		Id     uint64 `json:"id"`
+		From   User   `json:"from"`
+		To     User   `json:"to"`
+		Amount int64  `json:"amount"`
+		Status uint64 `json:"status"`
+		Ctime  uint64 `json:"ctime"`
+	}
+
 	GetUserTransactionsData struct {
-		Transactions   []*proto.Transaction `json:"transactions"`
-		NextPagination *Pagination          `json:"next_pagination"`
+		Transactions   []*Transaction `json:"transactions"`
+		NextPagination *Pagination    `json:"next_pagination"`
 	}
 
 	GetUserTransactionsResp struct {
@@ -78,10 +93,46 @@ func (c GetUserTransactionsController) Do(ctx *gin.Context) {
 		Pagination: req.Pagination.ToServicePagination(),
 	})
 
+	var transactions []*Transaction
+	if len(getResp.GetTransactions()) > 0 {
+		var ids []uint64
+		for _, t := range getResp.Transactions {
+			ids = append(ids, t.FromUser, t.ToUser)
+			transactions = append(transactions, &Transaction{
+				Id:     t.Id,
+				Amount: t.Amount,
+				Status: t.Status,
+				Ctime:  t.Ctime,
+			})
+		}
+		batchResp, err := c.uClient.GetBatch(reqCtx, &proto.GetBatchReq{Ids: ids})
+		if err != nil {
+			ctx.JSON(http.StatusOK, &TransferResp{Code: common.GetCodeFromErr(err)})
+			return
+		}
+
+		for i, user := range batchResp.Users {
+			if i%2 == 0 {
+				transactions[i/2].From = User{
+					Id:    user.Id,
+					Name:  user.Name,
+					Email: user.Email,
+				}
+			} else {
+				transactions[i/2].To = User{
+					Id:    user.Id,
+					Name:  user.Name,
+					Email: user.Email,
+				}
+			}
+		}
+
+	}
+
 	resp := &GetUserTransactionsResp{
 		Code: common.GetCodeFromErr(err),
 		Data: &GetUserTransactionsData{
-			Transactions:   getResp.Transactions,
+			Transactions:   transactions,
 			NextPagination: FromPagination(getResp.NextPagination),
 		},
 	}
