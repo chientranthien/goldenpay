@@ -63,6 +63,7 @@ walletService.GetUserTransactions = async function (pagination) {
   const body = {
     pagination: pagination,
   }
+
   await fetch(api, {
       method: 'POST',
       credentials: 'include',

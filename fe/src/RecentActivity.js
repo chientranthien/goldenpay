@@ -8,7 +8,9 @@ export default function RecentActivity() {
 
   function getUserTransactions() {
     WalletService().GetUserTransactions(pagination).then(resp => {
-        if (resp.code != undefined && resp.code.id == 0) {
+        if (resp.code != undefined && resp.code.id == 0 &&
+          resp.data.transactions != null && resp.data.transactions != undefined) {
+          console.log(resp.data)
           setTransactions(prev => {
             const rs = [...prev]
             rs.push(...resp.data.transactions.map(e => <Activity key={e.id} from={e.from} to={e.to} amount={e.amount}
