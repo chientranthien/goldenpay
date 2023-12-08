@@ -60,7 +60,12 @@ func GetDefaultConfigFile() string {
 }
 
 func GetDefaultConfig(c any) {
-	f, err := os.Open(GetDefaultConfigFile())
+	configFile := os.Getenv("G_CONFIG")
+	if configFile == ""{
+	configFile = GetDefaultConfigFile()
+	}
+	
+	f, err := os.Open(configFile)
 	if err != nil {
 		log.Fatalf("failed to open config file, err=%v", err)
 	}
