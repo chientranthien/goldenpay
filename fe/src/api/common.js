@@ -1,5 +1,5 @@
 export const config = {
-  host: "http://localhost:5000/api/v1/"
+  host:  process.env.REACT_APP_API_URL
 };
 
 export const ToJSON = obj => JSON.stringify(toSnakeCase(obj, true))
