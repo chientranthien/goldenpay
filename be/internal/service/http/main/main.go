@@ -19,7 +19,7 @@ import (
 func setupRouter() *gin.Engine {
 	server := gin.Default()
 	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{"http://localhost:3000"}
+	corsConfig.AllowOrigins = []string{"http://localhost:3000", "https://goldenpay.chientran.info"}
 	corsConfig.AllowCredentials = true
 	server.Use(cors.New(corsConfig))
 	server.Use(func(ctx *gin.Context) {

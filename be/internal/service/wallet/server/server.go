@@ -81,7 +81,7 @@ func (s Server) Serve() {
 	} else {
 		common.L().Infow("listening", "add", s.conf.Addr)
 	}
-	
+
 	err = server.Serve(lis)
 	if err != nil {
 		common.L().Fatalw("serveErr", "err", err)
