@@ -86,7 +86,7 @@ func (c NewTransactionController) handleMessage(m *sarama.ConsumerMessage) {
 	})
 
 	if err != nil && status.Code(err) != codes.AlreadyExists {
-		common.L().Warnw("createWalletErr", "err", err)
+		common.L().Warnw("processTransfer", "err", err)
 		return
 	}
 

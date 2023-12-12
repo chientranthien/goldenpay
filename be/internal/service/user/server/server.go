@@ -32,12 +32,12 @@ func NewServer(
 	getByEmailController *controller.GetByEmailController,
 ) *Server {
 	return &Server{
-		conf: conf,
-		signupController: signupController,
-		loginController: loginController,
-		getController: getController,
-		getBatchController: getBatchController,
-		authzController: authzController,
+		conf:                 conf,
+		signupController:     signupController,
+		loginController:      loginController,
+		getController:        getController,
+		getBatchController:   getBatchController,
+		authzController:      authzController,
 		getByEmailController: getByEmailController,
 	}
 }
@@ -78,7 +78,10 @@ func (s Server) Serve() {
 	lis, err := net.Listen("tcp", s.conf.Addr)
 	if err != nil {
 		common.L().Fatalw("netListenErr", "config", s.conf, "err", err)
+	} else {
+		common.L().Infow("listening", "add", s.conf.Addr)
 	}
+
 	err = server.Serve(lis)
 	if err != nil {
 		common.L().Fatalw("serveErr", "err", err)

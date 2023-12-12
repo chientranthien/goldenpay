@@ -10,10 +10,14 @@ import (
 )
 
 type ProcessTransferController struct {
-	biz biz.WalletBiz
+	biz *biz.WalletBiz
 }
 
-func (c ProcessTransferController) Process(req *proto.ProcessTransferReq) (*proto.ProcessTransferResp, error) {
+func NewProcessTransferController(biz *biz.WalletBiz) *ProcessTransferController {
+	return &ProcessTransferController{biz: biz}
+}
+
+func (c ProcessTransferController) Do(req *proto.ProcessTransferReq) (*proto.ProcessTransferResp, error) {
 	if err := c.validate(req); err != nil {
 		return nil, err
 	}

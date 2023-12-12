@@ -33,6 +33,7 @@ func main() {
 	server := server.NewServer(
 		config.Get().WalletService,
 		controller.NewTransferController(biz),
+		controller.NewProcessTransferController(biz),
 		controller.NewTopupController(biz),
 		controller.NewGetController(biz),
 		controller.NewCreateController(biz),

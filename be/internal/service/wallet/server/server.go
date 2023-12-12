@@ -13,28 +13,31 @@ import (
 
 type Server struct {
 	proto.UnimplementedWalletServiceServer
-	conf                common.ServiceConfig
-	transferController  *controller.TransferController
-	topupController     *controller.TopupController
-	getController       *controller.GetController
-	createController    *controller.CreateController
-	getUserTransactions *controller.GetUserTransactionsController
+	conf                      common.ServiceConfig
+	transferController        *controller.TransferController
+	processTransferController *controller.ProcessTransferController
+	topupController           *controller.TopupController
+	getController             *controller.GetController
+	createController          *controller.CreateController
+	getUserTransactions       *controller.GetUserTransactionsController
 }
 
 func NewServer(
 	conf common.ServiceConfig,
 	transferController *controller.TransferController,
+	processTransferController *controller.ProcessTransferController,
 	topupController *controller.TopupController,
 	getController *controller.GetController,
 	createController *controller.CreateController,
 	getUserTransactions *controller.GetUserTransactionsController,
 ) *Server {
 	return &Server{
-		conf:                conf,
-		transferController:  transferController,
-		topupController:     topupController,
-		getController:       getController,
-		createController:    createController,
+		conf: conf,
+		transferController: transferController,
+		processTransferController: processTransferController,
+		topupController: topupController,
+		getController: getController,
+		createController: createController,
 		getUserTransactions: getUserTransactions,
 	}
 }
@@ -45,6 +48,10 @@ func (s Server) Get(ctx context.Context, req *proto.GetWalletReq) (*proto.GetWal
 
 func (s Server) Transfer(ctx context.Context, req *proto.TransferReq) (*proto.TransferResp, error) {
 	return s.transferController.Do(req)
+}
+
+func (s Server) ProcessTransfer(ctx context.Context, req *proto.ProcessTransferReq) (*proto.ProcessTransferResp, error) {
+	return s.processTransferController.Do(req)
 }
 
 func (s Server) Topup(ctx context.Context, req *proto.TopupReq) (*proto.TopupResp, error) {
@@ -74,6 +81,7 @@ func (s Server) Serve() {
 	} else {
 		common.L().Infow("listening", "add", s.conf.Addr)
 	}
+	
 	err = server.Serve(lis)
 	if err != nil {
 		common.L().Fatalw("serveErr", "err", err)
