@@ -5,22 +5,22 @@ const (
 )
 
 const (
-	TransactionStatusPending = 1 << iota
-	TransactionStatusRejected
-	TransactionStatusSuccess
+	TransactionStatusPending  = 1
+	TransactionStatusRejected = 2
+	TransactionStatusSuccess  = 3
 )
 
 const (
-	WalletStatusActive = 1 << iota
+	WalletStatusActive = 1
 )
 
 const (
-	UserStatusActive = 1 << iota
+	UserStatusActive = 1
 )
 const (
 	GoldenDollar = "GDD"
 )
 
 const (
-	TopupStatusSuccess = 1 << iota
+	TopupStatusSuccess = 1
 )
