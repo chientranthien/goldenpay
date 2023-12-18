@@ -21,9 +21,6 @@ You can also build all packages under './internal/service' into binaries by a sp
 To do cross compilation, such as build binary for Linux while working on Mac
 
   GOOS=linux make build/all
-
-See "make gen" if you are looking for code generation. Note that some build
-recipes might fail if the required generated code is missing.
 EOF
 }
 
