@@ -10,5 +10,5 @@ gen_wallet_proto:
 
 gen_proto: gen_user_proto gen_wallet_proto
 
-build_all:
-	@script/build.sh
+build/%:
+	@script/build.sh $*
