@@ -4,8 +4,8 @@ FROM golang:1.19
 WORKDIR /wrk
 COPY . /wrk
 RUN cd /wrk
-RUN make build/wallet
+RUN make build/event_handler
 
 
-CMD ./bin/wallet/exc
+CMD ./bin/event_handler/exc
 

@@ -1,9 +1,11 @@
+# TODO not use root user
 FROM golang:1.19
 
 WORKDIR /wrk
-USER 1001
+COPY . /wrk
+RUN cd /wrk
+RUN make build/http
 
-COPY ../../../../* .
 
-RUN make
+CMD ./bin/http/exc
 

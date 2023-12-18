@@ -12,3 +12,6 @@ gen_proto: gen_user_proto gen_wallet_proto
 
 build/%:
 	@script/build.sh $*
+
+gen_docker:
+	@script/gen_dockerfile.sh

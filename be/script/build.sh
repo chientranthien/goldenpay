@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-. "$(git rev-parse --show-toplevel || echo ".")/be/script/common.sh"
+. "./script/common.sh"
 
 usage() {
   cat <<EOF
