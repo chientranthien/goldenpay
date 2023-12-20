@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goldenpay-be-deployment-user
+  labels:
+    app: goldenpay-be
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+      tier: be
+  template:
+    metadata:
+      labels:
+        app: user
+        tier: be
+    spec:
+      containers:
+        - name: goldenpay-user
+          image: chientt1993/goldenpay-be-user
+          imagePullPolicy: IfNotP keyboard.send_keysresent

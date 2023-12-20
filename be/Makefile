@@ -18,3 +18,9 @@ docker/gen/%:
 
 docker/build/%:
 	@script/docker_build.sh $*
+
+docker/push/%:
+	@script/docker_push.sh $*
+
+k8s/gen/%:
+	@script/k8s_gen.sh $*

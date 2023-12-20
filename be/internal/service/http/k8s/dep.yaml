@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goldenpay-be-deployment-http
+  labels:
+    app: goldenpay-be
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http
+      tier: be
+  template:
+    metadata:
+      labels:
+        app: http
+        tier: be
+    spec:
+      containers:
+        - name: goldenpay-http
+          image: chientt1993/goldenpay-be-http
+          imagePullPolicy: IfNotPresent

@@ -8,5 +8,7 @@ RUN cd /wrk
 ARG G_ENV=dev
 RUN if [[ "$G_ENV" = "prod" ]] ; then make build/_service ; else echo "building for dev env, only copy from local bin" ; fi
 
-CMD ./bin/_service/exc
+RUN mkdir tmp; mv bin/_service tmp/_service ; rm bin/* -r; mv tmp/_service bin/_service
+
+CMD G_CONFIG=internal/service/_service/config/config.yaml ./bin/_service/exc
 

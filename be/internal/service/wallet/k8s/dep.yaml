@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goldenpay-be-deployment-wallet
+  labels:
+    app: goldenpay-be
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wallet
+      tier: be
+  template:
+    metadata:
+      labels:
+        app: wallet
+        tier: be
+    spec:
+      containers:
+        - name: goldenpay-wallet
+          image: chientt1993/goldenpay-be-wallet
+          imagePullPolicy: IfNotPresent

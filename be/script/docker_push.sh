@@ -21,36 +21,25 @@ See "make docker/gen/all" if you are looking for Dockerfile generation
 EOF
 }
 
-build() {
+push() {
   service=$1
 
   tag="chientt1993/goldenpay-be-"$service
-  docker_file="./internal/service/$service/docker/Dockerfile"
-  env=${G_ENV:="dev"}
-  arg="G_ENV=$env"
-
-  echo_info "building $docker_file, arg= $arg ,tag= $tag"
-  case "$env" in
-   dev)
-    docker build --progress=plain --build-arg $arg -f $docker_file -t $tag .
-    ;;
-    prod)
-    docker build --progress=plain --build-arg $arg -f $docker_file -t $tag . --no-cache
-    ;;
-  esac
+  echo_info "pushing docker,tag= $tag"
+  docker push $tag
 }
 
-build_all() {
+push_all() {
   # Build
   for service in $(ls ./internal/service/ -1) ; do
     # build the service
-    build "$service"
+    push "$service"
   done
 }
 
 case "$1" in
 all)
-  build_all
+  push_all
   exit ;;
 
 -h | --help)
@@ -58,7 +47,7 @@ all)
   exit
   ;;
 *)
-  build "$@"
+  push "$@"
   exit
   ;;
 esac

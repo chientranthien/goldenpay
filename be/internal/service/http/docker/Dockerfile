@@ -8,5 +8,7 @@ RUN cd /wrk
 ARG G_ENV=dev
 RUN if [[ "$G_ENV" = "prod" ]] ; then make build/http ; else echo "building for dev env, only copy from local bin" ; fi
 
-CMD ./bin/http/exc
+RUN mkdir tmp; mv bin/http tmp/http ; rm bin/* -r; mv tmp/http bin/http
+
+CMD G_CONFIG=internal/service/http/config/config.yaml ./bin/http/exc
 

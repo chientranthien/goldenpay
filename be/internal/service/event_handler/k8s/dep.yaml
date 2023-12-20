@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goldenpay-be-deployment-event_handler
+  labels:
+    app: goldenpay-be
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: event_handler
+      tier: be
+  template:
+    metadata:
+      labels:
+        app: event_handler
+        tier: be
+    spec:
+      containers:
+        - name: goldenpay-event_handler
+          image: chientt1993/goldenpay-be-event_handler
+          imagePullPolicy: IfNotPresent

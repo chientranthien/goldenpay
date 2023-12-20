@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goldenpay-be-deployment-_service
+  labels:
+    app: goldenpay-be
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: _service
+      tier: be
+  template:
+    metadata:
+      labels:
+        app: _service
+        tier: be
+    spec:
+      containers:
+        - name: goldenpay-_service
+          image: chientt1993/goldenpay-be-_service
+          imagePullPolicy: IfNotPresent
