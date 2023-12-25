@@ -3,65 +3,68 @@
 
 usage() {
   cat <<EOF
-To deploy on k8s for all or a particular service. Target could be any folder under the
+To apply on k8s for all or a particular service. Target could be any folder under the
 './internal/service' one, such as:
 
-  ./script/k8s_deploy.sh http
+  ./script/k8s_apply.sh http
 
 Or, if you trigger this script via make:
 
-  make k8s/deploy/$service
+  make k8s/apply/$service
 
-You can also deploy all under './internal/service' by a special target:
+You can also apply all under './internal/service' by a special target:
 'all'.
 
-  make k8s/deploy/all
+  make k8s/apply/all
 EOF
 }
 
-deploy() {
+apply() {
   service=$1
 
   k8s_file="./internal/service/$service/k8s/dep.yaml"
-  echo_info "deploying $k8s_file"
+  echo_info "Applying $k8s_file"
   kubectl apply -f $k8s_file
 }
 
-deploy_all() {
-  deploy_middleware
+apply_all() {
+  apply_middleware
 
   for service in $(ls ./internal/service/ -1) ; do
-    deploy "$service"
+    apply "$service"
   done
 }
 
-deploy_middleware() {
-  echo_info "Deploying MySQL PV"
+apply_middleware() {
+  echo_info "Applying MySQL PV"
   kubectl apply -f k8s/mysql_pv.yaml
 
-  echo_info "Deploying MySQL"
+  echo_info "Applying MySQL"
   kubectl apply -f k8s/mysql_dep.yaml
 
-  echo_info "Deploying Kafka"
+  echo_info "Applying zookeeper"
+  kubectl apply -f k8s/zoo_dep.yaml
+
+  echo_info "applying Kafka"
   kubectl apply -f k8s/kafka_dep.yaml
 }
 
-deploy_service() {
+apply_service() {
   for service in $(ls ./internal/service/ -1) ; do
-    deploy "$service"
+    apply "$service"
   done
 }
 
 case "$1" in
 all)
-  deploy_all
+  apply_all
   exit ;;
 
 middleware)
-  deploy_middleware
+  apply_middleware
   exit ;;
 service)
-  deploy_service
+  apply_service
   exit ;;
 
 -h | --help)
@@ -69,6 +72,6 @@ service)
   exit ;;
 
 *)
-  deploy "$@"
+  apply "$@"
   exit ;;
 esac
