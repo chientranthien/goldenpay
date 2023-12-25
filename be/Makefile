@@ -10,5 +10,23 @@ gen_wallet_proto:
 
 gen_proto: gen_user_proto gen_wallet_proto
 
-build_all:
-	@script/build.sh
+build/%:
+	@script/build.sh $*
+
+docker/gen/%:
+	@script/docker_gen.sh $*
+
+docker/build/%:
+	@script/docker_build.sh $*
+
+docker/push/%:
+	@script/docker_push.sh $*
+
+k8s/gen/%:
+	@script/k8s_gen.sh $*
+
+k8s/apply/%:
+	@script/k8s_apply.sh $*
+
+k8s/delete/%:
+	@script/k8s_delete.sh $*

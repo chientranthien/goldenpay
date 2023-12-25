@@ -1,0 +1,49 @@
+# TODO use pv
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: goldenpay
+  name: kafka
+spec:
+  ports:
+    - port: 9092
+  selector:
+    app: goldenpay
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: goldenpay
+  name: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: goldenpay
+  template:
+    metadata:
+      labels:
+        app: goldenpay
+    spec:
+      containers:
+      - image: bitnami/kafka:3.6.0
+        name: kafka
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 9092
+        env:
+          - name: KAFKA_CFG_ZOOKEEPER_CONNECT
+            value: "zookeeper:2181"
+          - name: ALLOW_PLAINTEXT_LISTENER
+            value: "yes"
+          - name: KAFKA_CFG_LISTENERS
+            value: "EXTER://kafka:9092,INTER://kafka:9093"
+          - name: KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP
+            value: "INTER:PLAINTEXT,EXTER:PLAINTEXT"
+          - name: KAFKA_CFG_INTER_BROKER_LISTENER_NAME
+            value: "INTER"
+          - name: KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE
+            value: "true"

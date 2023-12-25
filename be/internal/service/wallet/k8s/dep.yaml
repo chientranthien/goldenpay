@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: wallet
+spec:
+  ports:
+    - port: 5000
+  selector:
+    app: goldenpay
+  clusterIP: None
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goldenpay-be-deployment-wallet
+  labels:
+    app: goldenpay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: goldenpay
+      tier: be
+  template:
+    metadata:
+      labels:
+        app: goldenpay
+        tier: be
+    spec:
+      containers:
+        - name: goldenpay-wallet
+          image: chientt1993/goldenpay-be-wallet
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5000
