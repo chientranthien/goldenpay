@@ -1,37 +1,38 @@
 apiVersion: v1
 kind: Service
-
 metadata:
-  name: __service
+  labels:
+    app: goldenpay
+  name: zookeeper
 spec:
   ports:
-    - port: 5000
+    - port: 2181
   selector:
     app: goldenpay
   clusterIP: None
-
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: goldenpay-be-deployment-__service
   labels:
     app: goldenpay
+  name: zookeeper
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: goldenpay
-      tier: be
   template:
     metadata:
       labels:
         app: goldenpay
-        tier: be
     spec:
       containers:
-        - name: goldenpay-__service
-          image: chientt1993/goldenpay-be-__service
+        - image: bitnami/zookeeper:3.6.0
+          name: zookeeper
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 5000
+            - containerPort: 2181
+          env:
+            - name: ALLOW_ANONYMOUS_LOGIN
+              value: "yes"

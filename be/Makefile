@@ -24,3 +24,8 @@ docker/push/%:
 
 k8s/gen/%:
 	@script/k8s_gen.sh $*
+
+k8s/deploy/%:
+	@script/k8s_deploy.sh $*
+k8s/delete/%:
+	@script/k8s_delete.sh $*

@@ -25,6 +25,7 @@ build() {
   service=$1
 
   tag="chientt1993/goldenpay-be-"$service
+  tag=$(echo $tag | sed s/_/-/g)
   docker_file="./internal/service/$service/docker/Dockerfile"
   env=${G_ENV:="dev"}
   arg="G_ENV=$env"

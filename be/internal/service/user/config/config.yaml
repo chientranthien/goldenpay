@@ -5,13 +5,13 @@ db:
   db_name: golden_pay_db
 
 user_service:
-  addr: :5001
+  addr: :5000
 
 jwt:
   secret: 050D43E50DD6B75A8B62D3FB10E3449961063B2294F53E390CA722BE2C9C49D5
   duration_in_min: 30
 
 new_user_producer:
-  addrs: ["kafka:59092"]
+  addrs: ["kafka:9092"]
   version: 3.6.0
   topic: new_user_event

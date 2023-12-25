@@ -27,7 +27,7 @@ gen() {
   target=$target_dir"Dockerfile"
 
   echo_info "Generating Dockerfile for $service , target= $target"
-  sed s/_service/$service/g ./script/dockerfile_template  > $target
+  sed s/__service/$service/g ./script/dockerfile_template.Dockerfile  > $target
 }
 
 gen_all() {
