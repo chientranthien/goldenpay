@@ -62,8 +62,14 @@ func (c TransferController) Do(ctx *gin.Context) {
 	reqCtx := common.Ctx()
 	authzResp, err := c.uClient.Authz(reqCtx, &proto.AuthzReq{Token: token})
 	if err != nil {
+		ctx.JSON(http.StatusOK, &TransferResp{Code: &common.Code{Id: int32(codes.InvalidArgument), Msg: "can't send to yourself"}})
+		return
+	}
+
+	if authzResp.Metadata.GetEmail() == req.ToEmail {
 		ctx.JSON(http.StatusOK, &TransferResp{Code: common.GetCodeFromErr(err)})
 		return
+
 	}
 
 	getResp, err := c.uClient.GetByEmail(reqCtx, &proto.GetByEmailReq{Email: req.ToEmail})

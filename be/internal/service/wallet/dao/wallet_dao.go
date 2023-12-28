@@ -71,7 +71,7 @@ func (d *WalletDao) GetByUserIDForUpdate(userID uint64) (*proto.Wallet, error) {
 		UserId: userID,
 	}
 
-	err := d.getDB().Clauses(clause.Locking{Strength: "UPDATE"}).First(w).Error
+	err := d.getDB().Where(w).Clauses(clause.Locking{Strength: "UPDATE"}).First(w).Error
 	if err != nil {
 		common.L().Infow("getByUserIDForUpdateErr", "userID", userID, "err", err)
 		return nil, err
@@ -97,7 +97,7 @@ func (d *WalletDao) GetByUserID(userID uint64) (*proto.Wallet, error) {
 		UserId: userID,
 	}
 
-	err := d.getDB().First(w).Error
+	err := d.getDB().Where(w).First(w).Error
 	if err != nil {
 		common.L().Infow("getByUserIDeErr", "userID", userID, "err", err)
 		return nil, err

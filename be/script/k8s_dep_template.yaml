@@ -8,6 +8,7 @@ spec:
     - port: 5000
   selector:
     app: goldenpay
+    name: __service
   clusterIP: None
 
 ---
@@ -27,6 +28,7 @@ spec:
     metadata:
       labels:
         app: goldenpay
+        name: __service
         tier: be
     spec:
       containers:

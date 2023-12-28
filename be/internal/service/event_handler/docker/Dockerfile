@@ -1,5 +1,5 @@
 # TODO not use root user
-FROM golang:1.19
+FROM chientt1993/golang:1.19
 RUN ln -sf /bin/bash /bin/sh
 
 WORKDIR /wrk

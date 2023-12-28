@@ -8,6 +8,7 @@ spec:
     - port: 3306
   selector:
     app: goldenpay
+    name: mysql
   clusterIP: None
 
 ---
@@ -29,6 +30,7 @@ spec:
     metadata:
       labels:
         app: goldenpay
+        name: mysql
     spec:
       containers:
         - image: mysql:5.7

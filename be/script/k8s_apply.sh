@@ -43,7 +43,7 @@ apply_middleware() {
   kubectl apply -f k8s/mysql_dep.yaml
 
   echo_info "Applying zookeeper"
-  kubectl apply -f k8s/zoo_dep.yaml
+  kubectl apply -f k8s/zookeeper_dep.yaml
 
   echo_info "applying Kafka"
   kubectl apply -f k8s/kafka_dep.yaml

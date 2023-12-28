@@ -10,6 +10,7 @@ spec:
     - port: 2181
   selector:
     app: goldenpay
+    name: zookeeper
   clusterIP: None
 ---
 apiVersion: apps/v1
@@ -27,6 +28,7 @@ spec:
     metadata:
       labels:
         app: goldenpay
+        name: zookeeper
     spec:
       containers:
         - image: bitnami/zookeeper:3.6.0
