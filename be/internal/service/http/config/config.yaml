@@ -1,5 +1,5 @@
 http_service:
-  addr: http:5000
+  addr: :5000
 user_service:
   addr: user:5000
 wallet_service:

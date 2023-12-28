@@ -16,12 +16,19 @@ import (
 	"github.com/chientranthien/goldenpay/internal/service/user/dao"
 )
 
-type UserBiz struct {
-	jwtConfig      config.JWTConfig
-	dao            *dao.UserDao
-	producer       sarama.SyncProducer
-	producerConfig common.ProducerConfig
-}
+type (
+	UserBiz struct {
+		jwtConfig      config.JWTConfig
+		dao            *dao.UserDao
+		producer       sarama.SyncProducer
+		producerConfig common.ProducerConfig
+	}
+
+	Claims struct {
+		jwt.StandardClaims
+		Email string `json:"email"`
+	}
+)
 
 func NewUserBiz(
 	jwtConfig config.JWTConfig,
@@ -73,6 +80,7 @@ func (b UserBiz) Signup(req *proto.SignupReq) (*proto.SignupResp, error) {
 
 	return &proto.SignupResp{}, nil
 }
+
 func (b UserBiz) Login(req *proto.LoginReq) (*proto.LoginResp, error) {
 	getResp, err := b.GetByEmail(&proto.GetByEmailReq{Email: req.Email})
 	if err != nil {
@@ -120,11 +128,15 @@ func (b UserBiz) HashPassword(password string) string {
 }
 
 func (b UserBiz) GenerateToken(user *proto.User) (string, error) {
-	claims := &jwt.StandardClaims{
-		Audience:  fmt.Sprintf("%d", user.Id),
-		ExpiresAt: time.Now().Add(time.Duration(b.jwtConfig.DurationInMin) * time.Minute).Unix(),
-		IssuedAt:  time.Now().Unix(),
+	claims := &Claims{
+		StandardClaims: jwt.StandardClaims{
+			Audience:  fmt.Sprintf("%d", user.Id),
+			ExpiresAt: time.Now().Add(time.Duration(b.jwtConfig.DurationInMin) * time.Minute).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
+		Email: user.Email,
 	}
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	tokenString, err := token.SignedString([]byte(b.jwtConfig.Secret))
@@ -141,12 +153,8 @@ func (b UserBiz) GenerateToken(user *proto.User) (string, error) {
 	return tokenString, nil
 }
 
-type Claim struct {
-	jwt.StandardClaims
-}
-
-func (b UserBiz) ParseToken(tokenStr string) (*jwt.StandardClaims, error) {
-	claims := &jwt.StandardClaims{}
+func (b UserBiz) ParseToken(tokenStr string) (*Claims, error) {
+	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(b.jwtConfig.Secret), nil
 	})

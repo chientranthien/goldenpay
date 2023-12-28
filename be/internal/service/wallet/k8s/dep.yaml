@@ -8,6 +8,7 @@ spec:
     - port: 5000
   selector:
     app: goldenpay
+    name: wallet
   clusterIP: None
 
 ---
@@ -27,6 +28,7 @@ spec:
     metadata:
       labels:
         app: goldenpay
+        name: wallet
         tier: be
     spec:
       containers:
