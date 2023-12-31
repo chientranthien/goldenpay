@@ -1,11 +1,10 @@
 package controller
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"context"
 
 	"github.com/chientranthien/goldenpay/internal/common"
+	httpcommon "github.com/chientranthien/goldenpay/internal/common/http"
 	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
@@ -16,7 +15,7 @@ type (
 		HasMore bool   `json:"has_more"`
 	}
 
-	GetUserTransactionsReq struct {
+	GetUserTransactionsBody struct {
 		Pagination *Pagination `json:"pagination"`
 	}
 
@@ -40,24 +39,23 @@ type (
 		NextPagination *Pagination    `json:"next_pagination"`
 	}
 
-	GetUserTransactionsResp struct {
-		Code *common.Code             `json:"code"`
-		Data *GetUserTransactionsData `json:"data"`
-	}
-
 	GetUserTransactionsController struct {
 		uClient proto.UserServiceClient
 		wClient proto.WalletServiceClient
+
+		ctx  context.Context
+		body *GetUserTransactionsBody
+		req  httpcommon.Req
 	}
 )
 
-func NewGetUserTransactionsController(uClient proto.UserServiceClient, wClient proto.WalletServiceClient) *GetUserTransactionsController {
+func NewGetUserTransactionsController(
+	uClient proto.UserServiceClient,
+	wClient proto.WalletServiceClient,
+) *GetUserTransactionsController {
 	return &GetUserTransactionsController{uClient: uClient, wClient: wClient}
 }
 
-func NewPagination(val int64, limit uint32, hasMore bool) *Pagination {
-	return &Pagination{Val: val, Limit: limit, HasMore: hasMore}
-}
 func FromPagination(p *proto.Pagination) *Pagination {
 	if p == nil {
 		return nil
@@ -66,32 +64,19 @@ func FromPagination(p *proto.Pagination) *Pagination {
 	return &Pagination{Val: p.Val, Limit: p.Limit, HasMore: p.HasMore}
 }
 
-func (c GetUserTransactionsController) Do(ctx *gin.Context) {
-	req := &GetUserTransactionsReq{}
-	if ctx.BindJSON(req) != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{})
-		return
-	}
-
-	token, _ := ctx.Cookie(TokenCookie)
-	if token == "" {
-		ctx.JSON(http.StatusOK, &TransferResp{Code: common.CodeUnauthenticated})
-		return
-	}
-
-	reqCtx := common.Ctx()
-	authzResp, err := c.uClient.Authz(reqCtx, &proto.AuthzReq{Token: token})
-	if err != nil {
-		ctx.JSON(http.StatusOK, &TransferResp{Code: common.GetCodeFromErr(err)})
-		return
-	}
-
-	getResp, err := c.wClient.GetUserTransactions(reqCtx, &proto.GetUserTransactionsReq{
+func (c GetUserTransactionsController) Do() (common.AnyPtr, common.Code) {
+	getResp, err := c.wClient.GetUserTransactions(c.ctx, &proto.GetUserTransactionsReq{
 		Cond: &proto.GetUserTransactionsCond{
-			User: &proto.GetUserTransactionsCond_UserCond{Eq: authzResp.Metadata.UserId},
+			User: &proto.GetUserTransactionsCond_UserCond{Eq: c.req.Metadata.UserId},
 		},
-		Pagination: req.Pagination.ToServicePagination(),
+		Pagination: c.body.Pagination.ToServicePagination(),
 	})
+
+	code := common.GetCodeFromErr(err)
+	if !code.Success() {
+		common.L().Errorw("getUserTransactionsErr", "bode", c.body, "err", err)
+		return nil, code
+	}
 
 	var transactions []*Transaction
 	if len(getResp.GetTransactions()) > 0 {
@@ -105,10 +90,11 @@ func (c GetUserTransactionsController) Do(ctx *gin.Context) {
 				Ctime:  t.Ctime,
 			})
 		}
-		batchResp, err := c.uClient.GetBatch(reqCtx, &proto.GetBatchReq{Ids: ids})
-		if err != nil {
-			ctx.JSON(http.StatusOK, &TransferResp{Code: common.GetCodeFromErr(err)})
-			return
+		batchResp, err := c.uClient.GetBatch(c.ctx, &proto.GetBatchReq{Ids: ids})
+		code = common.GetCodeFromErr(err)
+		if !code.Success() {
+			common.L().Errorw("userUserBatchErr", "bode", c.body, "err", err)
+			return nil, code
 		}
 
 		for i, user := range batchResp.Users {
@@ -129,22 +115,27 @@ func (c GetUserTransactionsController) Do(ctx *gin.Context) {
 
 	}
 
-	resp := &GetUserTransactionsResp{
-		Code: common.GetCodeFromErr(err),
-		Data: &GetUserTransactionsData{
-			Transactions:   transactions,
-			NextPagination: FromPagination(getResp.NextPagination),
-		},
+	data := &GetUserTransactionsData{
+		Transactions:   transactions,
+		NextPagination: FromPagination(getResp.NextPagination),
 	}
 
-	ctx.JSON(http.StatusOK, resp)
-	if err != nil {
-		common.L().Errorw("getUserTransactionsErr", "req", req, "err", err)
-		return
-	}
+	return data, common.CodeSuccess
 }
 
-func (c GetUserTransactionsController) validate(req *GetUserTransactionsReq) *common.Code {
+func (c *GetUserTransactionsController) Take(ctx context.Context, req httpcommon.Req) common.Code {
+	if req.Metadata.UserId <= 0 {
+		return common.CodeInvalidMetadata
+	}
+
+	if b, ok := req.Body.(*GetUserTransactionsBody); ok {
+		c.body = b
+		c.ctx = ctx
+		c.req = req
+	} else {
+		return common.CodeBody
+	}
+
 	return common.CodeSuccess
 }
 

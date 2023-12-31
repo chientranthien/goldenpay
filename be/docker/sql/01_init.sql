@@ -23,7 +23,8 @@ create table if not exists wallet_tab (
     version int not null,
     ctime bigint not null,
     mtime bigint not null,
-    primary key(id)
+    primary key(id),
+    KEY `user_id_idx` (`user_id`)
 );
 
 create table if not exists transaction_tab (
@@ -37,7 +38,8 @@ create table if not exists transaction_tab (
     version int not null,
     ctime bigint not null,
     mtime bigint not null,
-    primary key(id)
+    primary key(id),
+    KEY `transaction_user_idx` (from_user, to_user, id DESC)
 );
 
 create table if not exists topup_tab (

@@ -14,7 +14,7 @@ func createLogger() *zap.Logger {
 	stdout := zapcore.AddSync(os.Stdout)
 
 	file := zapcore.AddSync(&lumberjack.Logger{
-		Filename:   "logs/app.log",
+		Filename:   "log/app.log",
 		MaxSize:    100, // megabytes
 		MaxBackups: 10,
 		MaxAge:     7, // days

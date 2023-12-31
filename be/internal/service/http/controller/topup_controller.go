@@ -1,90 +1,67 @@
 package controller
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"context"
 
 	"github.com/chientranthien/goldenpay/internal/common"
+	httpcommon "github.com/chientranthien/goldenpay/internal/common/http"
 	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
 type (
-	TopupReq struct {
+	TopupBody struct {
 		Amount int64 `json:"amount"`
 	}
 
-	TopupResp struct {
-		Code  *common.Code `json:"code"`
-		Topup Topup        `json:"topup"`
-	}
-
-	Topup struct {
+	TopupData struct {
 		id uint64 `json:"id"`
 	}
 
 	TopupController struct {
-		uClient proto.UserServiceClient
 		wClient proto.WalletServiceClient
+
+		ctx  context.Context
+		req  httpcommon.Req
+		body *TopupBody
 	}
 )
 
 func NewTopupController(
-	uClient proto.UserServiceClient,
 	wClient proto.WalletServiceClient,
 ) *TopupController {
-	return &TopupController{uClient: uClient, wClient: wClient}
+	return &TopupController{wClient: wClient}
 }
 
-func (c TopupController) Do(ctx *gin.Context) {
-	req := &TopupReq{}
-	if ctx.BindJSON(req) != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{})
-		return
-	}
-
-	if code := c.validate(req); !code.IsSuccess() {
-		resp := &TopupResp{
-			Code: code,
-		}
-		ctx.JSON(http.StatusOK, resp)
-		return
-	}
-
-	token, _ := ctx.Cookie(TokenCookie)
-	if token == "" {
-		ctx.JSON(http.StatusOK, &TopupResp{Code: common.CodeUnauthenticated})
-		return
-	}
-
-	reqCtx := common.Ctx()
-	authzResp, err := c.uClient.Authz(reqCtx, &proto.AuthzReq{Token: token})
-	if err != nil {
-		ctx.JSON(http.StatusOK, &TopupResp{Code: common.GetCodeFromErr(err)})
-		return
-	}
-
-	topupResp, err := c.wClient.Topup(reqCtx, &proto.TopupReq{
-		UserId: authzResp.Metadata.UserId,
-		Amount:   req.Amount,
+func (c TopupController) Do() (common.AnyPtr, common.Code) {
+	topupResp, err := c.wClient.Topup(c.ctx, &proto.TopupReq{
+		UserId: c.req.Metadata.UserId,
+		Amount: c.body.Amount,
 	})
-	resp := &TopupResp{
-		Code: common.GetCodeFromErr(err),
+	code := common.GetCodeFromErr(err)
+	if !code.Success() {
+		common.L().Errorw("TopupErr", "body", c.body, "err", err)
+		return nil, code
 	}
-	if topupResp != nil {
-		resp.Topup = Topup{id: topupResp.TopupId}
-	}
-	ctx.JSON(http.StatusOK, resp)
 
-	if err != nil {
-		common.L().Errorw("TopupErr", "req", req, "err", err)
-		return
-	}
+	return &TopupData{id: topupResp.TopupId}, common.CodeSuccess
 }
 
-func (c TopupController) validate(req *TopupReq) *common.Code {
-	if req.Amount <= 0 {
+func (c *TopupController) Take(ctx context.Context, req httpcommon.Req) common.Code {
+	if req.Metadata.UserId <= 0 {
+		return common.CodeInvalidMetadata
+	}
+
+	if b, ok := req.Body.(*TopupBody); ok {
+		c.body = b
+		c.ctx = ctx
+		c.req = req
+	} else {
+		return common.CodeBody
+	}
+
+	if c.body.Amount <= 0 {
 		return common.CodeInvalidArgument
 	}
+
 	return common.CodeSuccess
 }
