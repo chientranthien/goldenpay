@@ -14,30 +14,32 @@ func setupHTTPServer() {
 
 	httpcommon.Init(config.Get().HttpService, uClient)
 
-	httpcommon.RegisterPut(
-		"api/v1/users/transactions",
-		func() httpcommon.Ctl { return controller.NewTransferController(uClient, wClient) },
-		&controller.TransferBody{},
-		&controller.TransferData{},
-	)
-	httpcommon.RegisterPut(
-		"api/v1/users/topups",
-		func() httpcommon.Ctl { return controller.NewTopupController(wClient) },
-		&controller.TopupController{},
-		&controller.TopupData{},
-	)
-	httpcommon.RegisterPost(
-		"api/v1/users/transactions/_query",
-		func() httpcommon.Ctl { return controller.NewGetUserTransactionsController(uClient, wClient) },
-		&controller.GetUserTransactionsBody{},
-		&controller.GetUserTransactionsData{},
-	)
-	httpcommon.RegisterGet(
-		"api/v1/users/wallets",
-		func() httpcommon.Ctl { return controller.NewGetUserWalletController(wClient) },
-		&controller.GetUserWalletBody{},
-		&controller.GetUserWalletData{},
-	)
+	httpcommon.RegisterPut(httpcommon.PutEndpointInfo{
+		EP:       "api/v1/users/transactions",
+		NewCtlFn: func() httpcommon.Ctl { return controller.NewTransferController(uClient, wClient) },
+		Req:      &controller.TransferBody{},
+		Resp:     &controller.TransferData{},
+	})
+	httpcommon.RegisterPut(httpcommon.PutEndpointInfo{
+		EP:       "api/v1/users/topups",
+		NewCtlFn: func() httpcommon.Ctl { return controller.NewTopupController(wClient) },
+		Req:      &controller.TopupController{},
+		Resp:     &controller.TopupData{},
+	})
+	httpcommon.RegisterPost(httpcommon.PostEndpointInfo{
+		EP:       "api/v1/users/transactions/_query",
+		NewCtlFn: func() httpcommon.Ctl { return controller.NewGetUserTransactionsController(uClient, wClient) },
+		Req:      &controller.GetUserTransactionsBody{},
+		Resp:     &controller.GetUserTransactionsData{},
+	})
+	httpcommon.RegisterGet(httpcommon.GetEndpointInfo{
+		EP:       "api/v1/users/wallets",
+		NewCtlFn: func() httpcommon.Ctl { return controller.NewGetUserWalletController(wClient) },
+		Req:      &controller.GetUserWalletBody{},
+		Resp:     &controller.GetUserWalletData{},
+	})
+
+	httpcommon.Run()
 }
 
 func main() {

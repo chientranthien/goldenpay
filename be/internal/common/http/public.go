@@ -13,17 +13,14 @@ import (
 )
 
 type (
-	Empty interface {
-	}
-
-	CommonResp struct {
+	Resp struct {
 		Code common.Code `json:"code"`
 		Data any         `json:"data"`
 	}
 
 	Metadata struct {
 		UserId uint64
-		Email string
+		Email  string
 	}
 
 	Req struct {
@@ -38,18 +35,38 @@ type (
 
 	NewCtlFn func() Ctl
 
-	endpointInfo struct {
-		method      string
-		ep          string
-		newCtlFn    NewCtlFn
-		req         any
-		resp        any
-		preReqHooks []Hook
+	EndpointInfoPost struct {
+		EndpointInfo
 	}
+
+	EndpointInfo struct {
+		method      string
+		EP          string
+		NewCtlFn    NewCtlFn
+		Req         common.AnyPtr
+		Resp        common.AnyPtr
+		PreReqHooks []Hook
+	}
+
+	PostEndpointInfo EndpointInfo
+	GetEndpointInfo  EndpointInfo
+	PutEndpointInfo  EndpointInfo
 )
 
+func (i *PostEndpointInfo) Ensure() {
+	i.method = MethodPost
+}
+
+func (i *GetEndpointInfo) Ensure() {
+	i.method = MethodGet
+}
+
+func (i *PutEndpointInfo) Ensure() {
+	i.method = MethodPut
+}
+
 var (
-	handler *Server
+	server *Server
 )
 
 const (
@@ -61,13 +78,13 @@ const (
 	CookieUserId = "uid"
 )
 
-func Init(conf common.ServiceConfig, uClient proto.UserServiceClient) *gin.Engine {
-	server := gin.Default()
+func Init(conf common.ServiceConfig, uClient proto.UserServiceClient) {
+	ginServer := gin.Default()
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowOrigins = []string{"http://localhost:3000", "https://goldenpay.chientran.info"}
 	corsConfig.AllowCredentials = true
-	server.Use(cors.New(corsConfig))
-	server.Use(func(ctx *gin.Context) {
+	ginServer.Use(cors.New(corsConfig))
+	ginServer.Use(func(ctx *gin.Context) {
 		body, _ := io.ReadAll(ctx.Request.Body)
 		common.L().Infow(
 			"incomingReq",
@@ -79,31 +96,55 @@ func Init(conf common.ServiceConfig, uClient proto.UserServiceClient) *gin.Engin
 		ctx.Request.Body = io.NopCloser(bytes.NewReader(body))
 	})
 
-	handler = &Server{
-		server: server,
+	server = &Server{
+		conf:      conf,
+		ginServer: ginServer,
+		uClient:   uClient,
 	}
 
-	RegisterPost("api/v1/authz", func() Ctl { return NewAuthzController(uClient) }, &AuthzBody{}, &AuthzData{})
-	RegisterPost("api/v1/login", func() Ctl { return NewLoginController(uClient) }, &LoginBody{}, &LoginData{})
-	RegisterPost("api/v1/signup", func() Ctl { return NewSignupController(uClient) }, &SignupBody{}, &SignupData{})
+	RegisterPost(PostEndpointInfo{
+		EP:       "api/v1/authz",
+		NewCtlFn: func() Ctl { return NewAuthzController(uClient) },
+		Req:      &AuthzBody{},
+		Resp:     &AuthzData{},
+	})
+	RegisterPost(PostEndpointInfo{
+		EP:          "api/v1/login",
+		NewCtlFn:    func() Ctl { return NewLoginController(uClient) },
+		Req:         &LoginBody{},
+		Resp:        &LoginData{},
+		PreReqHooks: []Hook{EarlySkipIfAuthenticated},
+	})
+	RegisterPost(PostEndpointInfo{
+		EP:          "api/v1/signup",
+		NewCtlFn:    func() Ctl { return NewSignupController(uClient) },
+		Req:         &SignupBody{},
+		Resp:        &SignupData{},
+		PreReqHooks: []Hook{EarlySkipIfAuthenticated},
+	},
+	)
 
-	server.Run(conf.Addr)
-	return server
 }
 
-func RegisterPost(ep string, newCtlFn NewCtlFn, req, resp any) int {
-	handler.registry(MethodPost, ep, newCtlFn, req, resp)
-	return 0
+func Run() {
+	server.ginServer.Run(server.conf.Addr)
 }
 
-func RegisterGet(ep string, newCtlFn NewCtlFn, req, resp any) {
-	handler.registry(MethodGet, ep, newCtlFn, req, resp)
+func RegisterPost(epInfo PostEndpointInfo) {
+	epInfo.Ensure()
+	server.register(EndpointInfo(epInfo))
 }
 
-func RegisterPut(ep string, newCtlFn NewCtlFn, req, resp any) {
-	handler.registry(MethodPut, ep, newCtlFn, req, resp)
+func RegisterGet(epInfo GetEndpointInfo) {
+	epInfo.Ensure()
+	server.register(EndpointInfo(epInfo))
 }
 
-func Authz(ctx *gin.Context, reqCtx context.Context) (*proto.AuthzResp, common.Code) {
-	return handler.authz(ctx, reqCtx)
+func RegisterPut(epInfo PutEndpointInfo) {
+	epInfo.Ensure()
+	server.register(EndpointInfo(epInfo))
+}
+
+func authz(ginCtx *gin.Context, ctx context.Context) (*proto.AuthzResp, common.Code) {
+	return server.authz(ginCtx, ctx)
 }

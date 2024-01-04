@@ -14,8 +14,9 @@ import (
 
 type (
 	Server struct {
-		uClient proto.UserServiceClient
-		server  *gin.Engine
+		conf      common.ServiceConfig
+		ginServer *gin.Engine
+		uClient   proto.UserServiceClient
 	}
 
 	Cookie struct {
@@ -37,67 +38,67 @@ func NewServer(uClient proto.UserServiceClient) *Server {
 	return &Server{uClient: uClient}
 }
 
-func (s Server) Ctx(ctx *gin.Context) context.Context {
-	reqCtx := common.Ctx()
-	return context.WithValue(reqCtx, CtxHeaderGin, ctx)
+func (s Server) Ctx(ginCtx *gin.Context) context.Context {
+	ctx := common.Ctx()
+	return context.WithValue(ctx, CtxHeaderGin, ginCtx)
 }
 
-func GetGinCtx(reqCtx context.Context) *gin.Context {
-	return reqCtx.Value(CtxHeaderGin).(*gin.Context)
+func GetGinCtx(ctx context.Context) *gin.Context {
+	return ctx.Value(CtxHeaderGin).(*gin.Context)
 }
 
-func SetCookie(reqCtx context.Context, c Cookie) {
-	GetGinCtx(reqCtx).SetCookie(c.Name, c.Value, c.MaxAge, c.Path, c.Domain, c.Secure, c.HttpOnly)
+func SetCookie(ctx context.Context, c Cookie) {
+	GetGinCtx(ctx).SetCookie(c.Name, c.Value, c.MaxAge, c.Path, c.Domain, c.Secure, c.HttpOnly)
 }
 
-func (s Server) newHandler(epInfo endpointInfo) func(ctx *gin.Context) {
-	return func(ctx *gin.Context) {
-		reqCtx := common.Ctx()
+func (s Server) newHandler(epInfo EndpointInfo) func(ctx *gin.Context) {
+	return func(ginCtx *gin.Context) {
+		ctx := common.Ctx()
 
 		req := Req{}
 		if s.needAuthentication(epInfo) {
-			authzResp, code := s.authz(ctx, reqCtx)
+			authzResp, code := s.authz(ginCtx, ctx)
 
 			if !code.Success() {
-				ctx.JSON(http.StatusOK, &CommonResp{Code: code})
+				ginCtx.JSON(http.StatusOK, &Resp{Code: code})
 			}
 
 			metadata := authzResp.GetMetadata()
 			req.Metadata = Metadata{UserId: metadata.GetUserId(), Email: metadata.GetEmail()}
 		}
 
-		c := epInfo.newCtlFn()
+		c := epInfo.NewCtlFn()
 		var body any
-		if epInfo.req != nil {
-			t := reflect.TypeOf(epInfo.req)
+		if epInfo.Req != nil {
+			t := reflect.TypeOf(epInfo.Req)
 			body = reflect.New(t).Interface()
 		}
 		req.Body = body
 
-		for _, hook := range epInfo.preReqHooks {
-			if code := hook(reqCtx); !code.Success() {
-				ctx.JSON(http.StatusOK, &CommonResp{Code: code})
+		for _, hook := range epInfo.PreReqHooks {
+			if code := hook(ctx); !code.Success() {
+				ginCtx.JSON(http.StatusOK, &Resp{Code: code})
 				return
 			}
 		}
-		if code := c.Take(reqCtx, req); !code.Success() {
-			resp := &CommonResp{
+		if code := c.Take(ctx, req); !code.Success() {
+			resp := &Resp{
 				Code: code,
 			}
-			ctx.JSON(http.StatusOK, resp)
+			ginCtx.JSON(http.StatusOK, resp)
 			return
 		}
 
 		data, code := c.Do()
-		resp := CommonResp{Code: code, Data: data}
+		resp := Resp{Code: code, Data: data}
 
-		ctx.JSON(http.StatusOK, resp)
+		ginCtx.JSON(http.StatusOK, resp)
 	}
 }
 
 // TODO(tom): make this meth more generic
-func (s Server) needAuthentication(info endpointInfo) bool {
-	ep := strings.ToLower(info.ep)
+func (s Server) needAuthentication(info EndpointInfo) bool {
+	ep := strings.ToLower(info.EP)
 	if strings.Contains(ep, "login") || strings.Contains(ep, "signup") {
 		return false
 	}
@@ -105,13 +106,13 @@ func (s Server) needAuthentication(info endpointInfo) bool {
 	return true
 }
 
-func (s Server) authz(ctx *gin.Context, reqCtx context.Context) (*proto.AuthzResp, common.Code) {
-	token, _ := ctx.Cookie(CookieToken)
+func (s Server) authz(ginCtx *gin.Context, ctx context.Context) (*proto.AuthzResp, common.Code) {
+	token, _ := ginCtx.Cookie(CookieToken)
 	if token == "" {
 		return nil, common.CodeUnauthenticated
 	}
 
-	authzResp, err := s.uClient.Authz(reqCtx, &proto.AuthzReq{Token: token})
+	authzResp, err := s.uClient.Authz(ctx, &proto.AuthzReq{Token: token})
 	if err != nil {
 		return nil, common.GetCodeFromErr(err)
 	}
@@ -119,14 +120,6 @@ func (s Server) authz(ctx *gin.Context, reqCtx context.Context) (*proto.AuthzRes
 	return authzResp, common.CodeSuccess
 }
 
-func (s Server) registry(method, ep string, newCtlFn NewCtlFn, req, resp common.AnyPtr) {
-	epInfo := endpointInfo{
-		method:   method,
-		ep:       ep,
-		newCtlFn: newCtlFn,
-		req:      req,
-		resp:     resp,
-	}
-
-	s.server.Handle(method, ep, handler.newHandler(epInfo))
+func (s Server) register(epInfo EndpointInfo) {
+	s.ginServer.Handle(epInfo.method, epInfo.EP, server.newHandler(epInfo))
 }

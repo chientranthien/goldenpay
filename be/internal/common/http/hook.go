@@ -3,8 +3,6 @@ package http
 import (
 	"context"
 
-	"github.com/gin-gonic/gin"
-
 	"github.com/chientranthien/goldenpay/internal/common"
 )
 
@@ -14,8 +12,9 @@ type (
 )
 
 var (
-	EarlySkipIfAuthenticated = func(ctx *gin.Context, reqCtx context.Context) common.Code {
-		_, code := Authz(ctx, reqCtx)
+	EarlySkipIfAuthenticated = func(ctx context.Context) common.Code {
+		ginCtx := GetGinCtx(ctx)
+		_, code := authz(ginCtx, ctx)
 		if code.Success() {
 			return common.CodeAuthenticated
 		}

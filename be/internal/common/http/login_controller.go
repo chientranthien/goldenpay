@@ -11,11 +11,6 @@ import (
 	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
-const (
-	TokenCookie  = "token"
-	UserIdCookie = "uid"
-)
-
 type (
 	LoginBody struct {
 		Email    string `json:"email"`
@@ -47,7 +42,7 @@ func (c LoginController) Do() (common.AnyPtr, common.Code) {
 	}
 
 	SetCookie(c.ctx, Cookie{
-		Name:     TokenCookie,
+		Name:     CookieToken,
 		Value:    loginResp.Token,
 		MaxAge:   int(3 * 24 * time.Hour.Seconds()),
 		Path:     "/",
@@ -56,7 +51,7 @@ func (c LoginController) Do() (common.AnyPtr, common.Code) {
 		HttpOnly: false,
 	})
 	SetCookie(c.ctx, Cookie{
-		UserIdCookie,
+		CookieUserId,
 		fmt.Sprintf("%d", loginResp.UserId),
 		int(3 * 24 * time.Hour.Seconds()),
 		"/",
