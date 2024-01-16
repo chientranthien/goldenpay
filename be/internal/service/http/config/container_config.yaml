@@ -1,6 +1,6 @@
 http_service:
   addr: :5000
 user_service:
-  addr: localhost:5001
+  addr: user:5000
 wallet_service:
-  addr: localhost:5002
+  addr: wallet:5000

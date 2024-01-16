@@ -53,7 +53,7 @@ func SetCookie(ctx context.Context, c Cookie) {
 
 func (s Server) newHandler(epInfo EndpointInfo) func(ctx *gin.Context) {
 	return func(ginCtx *gin.Context) {
-		ctx := common.Ctx()
+		ctx := s.Ctx(ginCtx)
 
 		req := Req{}
 		if s.needAuthentication(epInfo) {
@@ -70,10 +70,11 @@ func (s Server) newHandler(epInfo EndpointInfo) func(ctx *gin.Context) {
 		c := epInfo.NewCtlFn()
 		var body any
 		if epInfo.Req != nil {
-			t := reflect.TypeOf(epInfo.Req)
+			t := reflect.TypeOf(epInfo.Req).Elem()
 			body = reflect.New(t).Interface()
 		}
 		req.Body = body
+		ginCtx.BindJSON(req.Body)
 
 		for _, hook := range epInfo.PreReqHooks {
 			if code := hook(ctx); !code.Success() {

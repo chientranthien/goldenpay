@@ -23,7 +23,7 @@ func setupHTTPServer() {
 	httpcommon.RegisterPut(httpcommon.PutEndpointInfo{
 		EP:       "api/v1/users/topups",
 		NewCtlFn: func() httpcommon.Ctl { return controller.NewTopupController(wClient) },
-		Req:      &controller.TopupController{},
+		Req:      &controller.TopupBody{},
 		Resp:     &controller.TopupData{},
 	})
 	httpcommon.RegisterPost(httpcommon.PostEndpointInfo{
