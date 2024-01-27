@@ -1,19 +1,19 @@
 user_service:
-  addr: localhost:5001
+  addr: user:5000
 wallet_service:
-  addr: localhost:5002
+  addr: wallet:5000
 
 general:
   initial_balance: 100
 
 new_user_consumer:
-  addrs: [ "localhost:59092" ]
+  addrs: [ "kafka:9092" ]
   version: 3.6.0
   topic: new_user_event
   consumer_group: event_handler
 
 new_transaction_consumer:
-  addrs: [ "localhost:59092" ]
+  addrs: [ "kafka:9092" ]
   version: 3.6.0
   topic: new_transaction_event
   consumer_group: event_handler

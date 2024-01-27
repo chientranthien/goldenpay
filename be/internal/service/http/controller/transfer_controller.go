@@ -1,33 +1,33 @@
 package controller
 
 import (
-	"net/http"
+	"context"
 
-	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/codes"
 
 	"github.com/chientranthien/goldenpay/internal/common"
+	httpcommon "github.com/chientranthien/goldenpay/internal/common/http"
 	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
 type (
-	TransferReq struct {
+	TransferBody struct {
 		ToEmail string `json:"to_email"`
 		Amount  int64  `json:"amount"`
 	}
 
-	TransferResp struct {
-		Code        *common.Code        `json:"code"`
-		Transaction TransferTransaction `json:"transaction"`
-	}
-
-	TransferTransaction struct {
+	TransferData struct {
 		id uint64 `json:"id"`
 	}
 
 	TransferController struct {
 		uClient proto.UserServiceClient
 		wClient proto.WalletServiceClient
+
+		ctx    context.Context
+		req    httpcommon.Req
+		body   *TransferBody
+		toUser *proto.User
 	}
 )
 
@@ -38,80 +38,58 @@ func NewTransferController(
 	return &TransferController{uClient: uClient, wClient: wClient}
 }
 
-func (c TransferController) Do(ctx *gin.Context) {
-	req := &TransferReq{}
-	if ctx.BindJSON(req) != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{})
-		return
-	}
-
-	if code := c.validate(req); !code.IsSuccess() {
-		resp := &TransferResp{
-			Code: code,
-		}
-		ctx.JSON(http.StatusOK, resp)
-		return
-	}
-
-	token, _ := ctx.Cookie(TokenCookie)
-	if token == "" {
-		ctx.JSON(http.StatusOK, &TransferResp{Code: common.CodeUnauthenticated})
-		return
-	}
-
-	reqCtx := common.Ctx()
-	authzResp, err := c.uClient.Authz(reqCtx, &proto.AuthzReq{Token: token})
-	if err != nil {
-		ctx.JSON(http.StatusOK, &TransferResp{Code: &common.Code{Id: int32(codes.InvalidArgument), Msg: "can't send to yourself"}})
-		return
-	}
-
-	if authzResp.Metadata.GetEmail() == req.ToEmail {
-		ctx.JSON(http.StatusOK, &TransferResp{Code: common.GetCodeFromErr(err)})
-		return
-
-	}
-
-	getResp, err := c.uClient.GetByEmail(reqCtx, &proto.GetByEmailReq{Email: req.ToEmail})
-	if err != nil {
-		ctx.JSON(http.StatusOK, &TransferResp{Code: common.GetCodeFromErr(err)})
-		return
-	}
-	toUser := getResp.User
-	if toUser.Status != common.UserStatusActive {
-		ctx.JSON(
-			http.StatusOK,
-			&TransferResp{Code: common.NewCode(int32(codes.InvalidArgument), "user's status not active")},
-		)
-		return
-	}
-
-	transferResp, err := c.wClient.Transfer(reqCtx, &proto.TransferReq{
-		FromUser: authzResp.Metadata.UserId,
-		ToUser:   toUser.Id,
-		Amount:   req.Amount,
+func (c TransferController) Do() (common.AnyPtr, common.Code) {
+	transferResp, err := c.wClient.Transfer(c.ctx, &proto.TransferReq{
+		FromUser: c.req.Metadata.UserId,
+		ToUser:   c.toUser.GetId(),
+		Amount:   c.body.Amount,
 	})
-	resp := &TransferResp{
-		Code: common.GetCodeFromErr(err),
+	code := common.GetCodeFromErr(err)
+	if !code.Success() {
+		common.L().Errorw("transferErr", "body", c.body, "err", err)
+		return nil, code
 	}
-	if transferResp != nil {
-		resp.Transaction = TransferTransaction{id: transferResp.TransactionId}
-	}
-	ctx.JSON(http.StatusOK, resp)
 
-	if err != nil {
-		common.L().Errorw("transferErr", "req", req, "err", err)
-		return
-	}
+	return TransferData{id: transferResp.GetTransactionId()}, common.CodeSuccess
 }
 
-func (c TransferController) validate(req *TransferReq) *common.Code {
-	if common.ValidateEmail(req.ToEmail) != nil {
+func (c *TransferController) Take(ctx context.Context, req httpcommon.Req) common.Code {
+	if req.Metadata.UserId <= 0 {
+		return common.CodeInvalidMetadata
+	}
+
+	if b, ok := req.Body.(*TransferBody); ok {
+		c.body = b
+		c.ctx = ctx
+		c.req = req
+	} else {
+		return common.CodeBody
+	}
+
+	if c.req.Metadata.Email == c.body.ToEmail {
+		return common.CodeInvalidArgument
+
+	}
+
+	if common.ValidateEmail(c.body.ToEmail) != nil {
 		return common.CodeInvalidArgument
 	}
 
-	if req.Amount <= 0 {
+	if c.body.Amount <= 0 {
 		return common.CodeInvalidArgument
 	}
+
+	getResp, err := c.uClient.GetByEmail(c.ctx, &proto.GetByEmailReq{Email: c.body.ToEmail})
+	code := common.GetCodeFromErr(err)
+	if !code.Success() {
+		return code
+	}
+
+	toUser := getResp.GetUser()
+	if toUser.GetStatus() != common.UserStatusActive {
+		return common.NewCode(int32(codes.InvalidArgument), "user's status not active")
+	}
+	c.toUser = toUser
+
 	return common.CodeSuccess
 }

@@ -1,26 +1,21 @@
 package controller
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"context"
 
 	"github.com/chientranthien/goldenpay/internal/common"
+	httpcommon "github.com/chientranthien/goldenpay/internal/common/http"
 	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
 type (
 	GetUserWalletController struct {
-		uClient proto.UserServiceClient
 		wClient proto.WalletServiceClient
+		ctx     context.Context
+		req     httpcommon.Req
 	}
 
-	GetUserWalletReq struct {
-	}
-
-	GetUserWalletResp struct {
-		Code *common.Code       `json:"code"`
-		Data *GetUserWalletData `json:"data"`
+	GetUserWalletBody struct {
 	}
 
 	GetUserWalletData struct {
@@ -29,37 +24,30 @@ type (
 )
 
 func NewGetUserWalletController(
-	uClient proto.UserServiceClient,
 	wClient proto.WalletServiceClient,
 ) *GetUserWalletController {
-	return &GetUserWalletController{uClient: uClient, wClient: wClient}
+	return &GetUserWalletController{wClient: wClient}
 }
 
-func (c GetUserWalletController) Do(ctx *gin.Context) {
-	token, _ := ctx.Cookie(TokenCookie)
-	if token == "" {
-		ctx.JSON(http.StatusOK, &TransferResp{Code: common.CodeUnauthenticated})
-		return
-	}
-	reqCtx := common.Ctx()
-	authzResp, err := c.uClient.Authz(reqCtx, &proto.AuthzReq{Token: token})
-	if err != nil {
-		ctx.JSON(http.StatusOK, &TransferResp{Code: common.GetCodeFromErr(err)})
-		return
+func (c GetUserWalletController) Do() (common.AnyPtr, common.Code) {
+	getWalletResp, err := c.wClient.Get(c.ctx, &proto.GetWalletReq{UserId: c.req.Metadata.UserId})
+
+	code := common.GetCodeFromErr(err)
+	if !code.Success() {
+		common.L().Errorw("getUserWalletErr", "userId", c.req.Metadata.UserId, "err", err)
+		return nil, code
 	}
 
-	getWalletResp, err := c.wClient.Get(reqCtx, &proto.GetWalletReq{UserId: authzResp.Metadata.UserId})
+	return &GetUserWalletData{Balance: getWalletResp.Balance}, common.CodeSuccess
+}
 
-	resp := &GetUserWalletResp{
-		Code: common.GetCodeFromErr(err),
+func (c *GetUserWalletController) Take(ctx context.Context, req httpcommon.Req) common.Code {
+	if req.Metadata.UserId <= 0 {
+		return common.CodeInvalidMetadata
 	}
-	if getWalletResp != nil {
-		resp.Data = &GetUserWalletData{Balance: getWalletResp.Balance}
-	}
-	ctx.JSON(http.StatusOK, resp)
 
-	if err != nil {
-		common.L().Errorw("getUserWalletErr", "userId", authzResp.Metadata.UserId, "err", err)
-		return
-	}
+	c.ctx = ctx
+	c.req = req
+
+	return common.CodeSuccess
 }

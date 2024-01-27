@@ -10,45 +10,57 @@ type Code struct {
 	Msg string `json:"msg"`
 }
 
-func NewCode(id int32, msg string) *Code {
-	return &Code{Id: id, Msg: msg}
+func NewCode(id int32, msg string) Code {
+	return Code{Id: id, Msg: msg}
 }
 
-func (c Code) IsSuccess() bool {
+func (c Code) Success() bool {
 	return c.Id == CodeSuccess.Id
 }
 
 var (
-	CodeSuccess = &Code{
+	CodeSuccess = Code{
 		Id:  int32(codes.OK),
 		Msg: "success",
 	}
-	CodeExisted = &Code{
+	CodeExisted = Code{
 		Id:  int32(codes.AlreadyExists),
 		Msg: "existed",
 	}
-	CodeUnknown = &Code{
+	CodeUnknown = Code{
 		Id:  int32(codes.Unknown),
 		Msg: "unknown",
 	}
-	CodeNotFound = &Code{
+	CodeNotFound = Code{
 		Id:  int32(codes.NotFound),
 		Msg: "not found",
 	}
-	CodeInvalidArgument = &Code{
+	CodeInvalidArgument = Code{
 		Id:  int32(codes.InvalidArgument),
 		Msg: "invalid argument",
 	}
-	CodeUnauthenticated = &Code{
+	CodeUnauthenticated = Code{
 		Id:  int32(codes.Unauthenticated),
 		Msg: "unauthenticated",
 	}
-	CodeProceeded = &Code{
+	CodeProceeded = Code{
 		Id:  18,
 		Msg: "proceeded",
 	}
+	CodeAuthenticated = Code{
+		Id:  19,
+		Msg: "authenticated",
+	}
+	CodeBody = Code{
+		Id:  20,
+		Msg: "body",
+	}
+	CodeInvalidMetadata = Code{
+		Id:  21,
+		Msg: "invalid metadata",
+	}
 
-	AllCodes = map[int32]*Code{
+	AllCodes = map[int32]Code{
 		CodeExisted.Id:         CodeExisted,
 		CodeSuccess.Id:         CodeSuccess,
 		CodeUnknown.Id:         CodeUnknown,
@@ -59,7 +71,7 @@ var (
 	}
 )
 
-func GetCode(c int32) *Code {
+func GetCode(c int32) Code {
 	codeObj, ok := AllCodes[c]
 	if !ok {
 		return CodeUnknown
@@ -67,6 +79,6 @@ func GetCode(c int32) *Code {
 
 	return codeObj
 }
-func GetCodeFromErr(e error) *Code {
+func GetCodeFromErr(e error) Code {
 	return GetCode(int32(status.Code(e)))
 }

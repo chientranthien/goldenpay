@@ -11,9 +11,11 @@ import (
 	"github.com/chientranthien/goldenpay/internal/service/user/biz"
 )
 
-type AuthzController struct {
-	biz *biz.UserBiz
-}
+type (
+	AuthzController struct {
+		biz *biz.UserBiz
+	}
+)
 
 func NewAuthzController(biz *biz.UserBiz) *AuthzController {
 	return &AuthzController{biz: biz}

@@ -1,13 +1,13 @@
 db:
-  addr: localhost:53306
+  addr: mysql:3306
   user: root
   pass: root
   db_name: golden_pay_db
 
 wallet_service:
-  addr: :5002
+  addr: :5000
 
 new_transaction_producer:
-  addrs: ["localhost:59092"]
+  addrs: ["kafka:9092"]
   version: 3.6.0
   topic: new_transaction_event
