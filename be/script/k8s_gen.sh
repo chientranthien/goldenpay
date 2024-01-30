@@ -28,7 +28,6 @@ gen() {
 
   echo_info "Generating K8s deployment for $service , target= $target"
   sed s/__service/$service/g ./script/k8s_dep_template.yaml  > $target
-  sed s/_/-/g $target -i
 }
 
 gen_all() {
