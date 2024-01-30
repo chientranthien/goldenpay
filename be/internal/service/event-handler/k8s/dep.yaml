@@ -2,20 +2,20 @@ apiVersion: v1
 kind: Service
 
 metadata:
-  name: event_handler
+  name: event-handler
 spec:
   ports:
     - port: 5000
   selector:
     app: goldenpay
-    name: event_handler
+    name: event-handler
   clusterIP: None
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: goldenpay-be-deployment-event_handler
+  name: goldenpay-be-deployment-event-handler
   labels:
     app: goldenpay
 spec:
@@ -28,12 +28,12 @@ spec:
     metadata:
       labels:
         app: goldenpay
-        name: event_handler
+        name: event-handler
         tier: be
     spec:
       containers:
-        - name: goldenpay-event_handler
-          image: chientt1993/goldenpay-be-event_handler
+        - name: goldenpay-event-handler
+          image: chientt1993/goldenpay-be-event-handler
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
