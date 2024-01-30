@@ -10,5 +10,5 @@ RUN if [[ "$G_ENV" = "prod" ]] ; then make build/user ; else echo "building for 
 
 RUN mkdir tmp; mv bin/user tmp/user ; rm bin/* -r; mv tmp/user bin/user
 
-CMD G_CONFIG=internal/service/user/config/config.yaml ./bin/user/exc
+CMD G_CONFIG=internal/service/user/config/container_config.yaml ./bin/user/exc
 

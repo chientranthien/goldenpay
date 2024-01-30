@@ -10,5 +10,5 @@ RUN if [[ "$G_ENV" = "prod" ]] ; then make build/wallet ; else echo "building fo
 
 RUN mkdir tmp; mv bin/wallet tmp/wallet ; rm bin/* -r; mv tmp/wallet bin/wallet
 
-CMD G_CONFIG=internal/service/wallet/config/config.yaml ./bin/wallet/exc
+CMD G_CONFIG=internal/service/wallet/config/container_config.yaml ./bin/wallet/exc
 

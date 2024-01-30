@@ -10,5 +10,5 @@ RUN if [[ "$G_ENV" = "prod" ]] ; then make build/http ; else echo "building for 
 
 RUN mkdir tmp; mv bin/http tmp/http ; rm bin/* -r; mv tmp/http bin/http
 
-CMD G_CONFIG=internal/service/http/config/config.yaml ./bin/http/exc
+CMD G_CONFIG=internal/service/http/config/container_config.yaml ./bin/http/exc
 
