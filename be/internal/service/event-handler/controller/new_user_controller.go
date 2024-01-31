@@ -10,7 +10,7 @@ import (
 
 	"github.com/chientranthien/goldenpay/internal/common"
 	"github.com/chientranthien/goldenpay/internal/proto"
-	"github.com/chientranthien/goldenpay/internal/service/event_handler/config"
+	"github.com/chientranthien/goldenpay/internal/service/event-handler/config"
 )
 
 type NewUserController struct {

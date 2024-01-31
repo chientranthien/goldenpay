@@ -10,8 +10,8 @@ import (
 	"github.com/IBM/sarama"
 
 	"github.com/chientranthien/goldenpay/internal/common"
-	"github.com/chientranthien/goldenpay/internal/service/event_handler/config"
-	"github.com/chientranthien/goldenpay/internal/service/event_handler/controller"
+	"github.com/chientranthien/goldenpay/internal/service/event-handler/config"
+	"github.com/chientranthien/goldenpay/internal/service/event-handler/controller"
 	walletclient "github.com/chientranthien/goldenpay/internal/service/wallet/client"
 )
 
