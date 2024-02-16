@@ -9,7 +9,6 @@ spec:
   selector:
     app: goldenpay
     name: user
-  clusterIP: None
 
 ---
 apiVersion: apps/v1
