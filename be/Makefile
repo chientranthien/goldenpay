@@ -23,10 +23,10 @@ docker/push/%:
 	@script/docker_push.sh $*
 
 k8s/gen/%:
-	@script/k8s_gen.sh $*
+	@script/k8s/gen.sh $*
 
 k8s/apply/%:
-	@script/k8s_apply.sh $*
+	@script/k8s/apply.sh $*
 
 k8s/delete/%:
-	@script/k8s_delete.sh $*
+	@script/k8s/delete.sh $*

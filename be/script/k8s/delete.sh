@@ -35,12 +35,22 @@ delete_all() {
   done
 }
 
+alias k8s_delete_cmd='kubectl delete -f'
 delete_middleware() {
   echo_info "deleting MySQL"
   kubectl delete -f k8s/mysql_dep.yaml
 
   echo_info "deleting Kafka"
   kubectl delete -f k8s/kafka_dep.yaml
+
+  echo_info "deleting Promtail"
+  kubectl delete -f k8s/promtail_ds.yaml
+
+  echo_info "deleting Grafana"
+  kubectl delete -f k8s/grafana_dep.yaml
+
+  echo_info "deleting Loki"
+  kubectl delete -f k8s/loki.yaml
 }
 
 delete_service() {

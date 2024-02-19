@@ -42,11 +42,20 @@ apply_middleware() {
   echo_info "Applying MySQL"
   kubectl apply -f k8s/mysql_dep.yaml
 
-  echo_info "Applying zookeeper"
-  kubectl apply -f k8s/zookeeper_dep.yaml
-
   echo_info "applying Kafka"
   kubectl apply -f k8s/kafka_dep.yaml
+
+  echo_info "applying Loki"
+  kubectl apply -f k8s/loki.yaml
+
+  echo_info "Applying Grafana PV"
+  kubectl apply -f k8s/grafana_pv.yaml
+
+  echo_info "applying Grafana"
+  kubectl apply -f k8s/grafana_dep.yaml
+
+  echo_info "applying Promtail"
+  kubectl apply -f k8s/promtail_ds.yaml
 }
 
 apply_service() {

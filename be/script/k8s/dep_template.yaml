@@ -4,12 +4,12 @@ kind: Service
 metadata:
   name: __service
 spec:
+  type: NodePort
   ports:
     - port: 5000
   selector:
     app: goldenpay
     name: __service
-  clusterIP: None
 
 ---
 apiVersion: apps/v1
