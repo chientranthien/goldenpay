@@ -4,7 +4,9 @@ import (
 	"context"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -34,10 +36,6 @@ const (
 	CtxHeaderGin = "gin"
 )
 
-func NewServer(uClient proto.UserServiceClient) *Server {
-	return &Server{uClient: uClient}
-}
-
 func (s Server) Ctx(ginCtx *gin.Context) context.Context {
 	ctx := common.Ctx()
 	return context.WithValue(ctx, CtxHeaderGin, ginCtx)
@@ -52,7 +50,19 @@ func SetCookie(ctx context.Context, c Cookie) {
 }
 
 func (s Server) newHandler(epInfo EndpointInfo) func(ctx *gin.Context) {
+	// TODO(tom): refactor this to be a chain of handler instead of multiple
+	// functional code inside 1 single function
 	return func(ginCtx *gin.Context) {
+		// TODO(tom): refactor this to be to reuse with grpc interceptor (maybe can do something similar to promhttp)
+		start := time.Now()
+		var code common.Code
+		defer func() {
+			api := epInfo.method + "__" + epInfo.EP
+			c := strconv.Itoa(int(code.Id))
+			requestLatency.WithLabelValues(api, c).Observe(float64(time.Now().Sub(start).Milliseconds()))
+			requestCount.WithLabelValues(api, c).Inc()
+		}()
+
 		ctx := s.Ctx(ginCtx)
 
 		req := Req{}
@@ -61,6 +71,7 @@ func (s Server) newHandler(epInfo EndpointInfo) func(ctx *gin.Context) {
 
 			if !code.Success() {
 				ginCtx.JSON(http.StatusOK, &Resp{Code: code})
+				return
 			}
 
 			metadata := authzResp.GetMetadata()
@@ -77,12 +88,12 @@ func (s Server) newHandler(epInfo EndpointInfo) func(ctx *gin.Context) {
 		ginCtx.BindJSON(req.Body)
 
 		for _, hook := range epInfo.PreReqHooks {
-			if code := hook(ctx); !code.Success() {
+			if code = hook(ctx); !code.Success() {
 				ginCtx.JSON(http.StatusOK, &Resp{Code: code})
 				return
 			}
 		}
-		if code := c.Take(ctx, req); !code.Success() {
+		if code = c.Take(ctx, req); !code.Success() {
 			resp := &Resp{
 				Code: code,
 			}

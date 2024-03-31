@@ -3,10 +3,7 @@ package client
 import (
 	"sync"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-
-	"github.com/chientranthien/goldenpay/internal/common"
+	commonproto "github.com/chientranthien/goldenpay/internal/common/proto"
 	"github.com/chientranthien/goldenpay/internal/proto"
 )
 
@@ -17,17 +14,7 @@ var (
 
 func NewUserServiceClient(addr string) proto.UserServiceClient {
 	clientOnce.Do(func() {
-		conn, err := grpc.Dial(
-			addr,
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-			common.ClientLoggingInterceptor,
-		)
-		if err != nil {
-			common.L().Errorw("dialErr", "addr", addr, "err", err)
-		} else {
-			common.L().Infow("dialed", "addr", addr)
-		}
-
+		conn, _ := commonproto.NewDial(addr)
 		client = proto.NewUserServiceClient(conn)
 	})
 

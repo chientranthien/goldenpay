@@ -16,7 +16,7 @@ build/%:
 docker/gen/%:
 	@script/docker_gen.sh $*
 
-docker/build/%:
+docker/build/%: build/%
 	@script/docker_build.sh $*
 
 docker/push/%:

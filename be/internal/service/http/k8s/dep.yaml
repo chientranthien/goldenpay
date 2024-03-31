@@ -3,9 +3,16 @@ kind: Service
 
 metadata:
   name: http
+  annotations:
+    goldenpay.prometheus/scrape: "true"
+    goldenpay.prometheus/path: "/metrics"
+    goldenpay.prometheus/port: "5050"
 spec:
   ports:
     - port: 5000
+      name: service
+    - port: 5050
+      name: metric
   selector:
     app: goldenpay
     name: http
