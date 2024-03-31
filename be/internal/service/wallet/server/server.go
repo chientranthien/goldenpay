@@ -2,11 +2,9 @@ package server
 
 import (
 	"context"
-	"net"
-
-	"google.golang.org/grpc"
 
 	"github.com/chientranthien/goldenpay/internal/common"
+	commonproto "github.com/chientranthien/goldenpay/internal/common/proto"
 	"github.com/chientranthien/goldenpay/internal/proto"
 	"github.com/chientranthien/goldenpay/internal/service/wallet/controller"
 )
@@ -32,13 +30,13 @@ func NewServer(
 	getUserTransactions *controller.GetUserTransactionsController,
 ) *Server {
 	return &Server{
-		conf: conf,
-		transferController: transferController,
+		conf:                      conf,
+		transferController:        transferController,
 		processTransferController: processTransferController,
-		topupController: topupController,
-		getController: getController,
-		createController: createController,
-		getUserTransactions: getUserTransactions,
+		topupController:           topupController,
+		getController:             getController,
+		createController:          createController,
+		getUserTransactions:       getUserTransactions,
 	}
 }
 
@@ -67,24 +65,11 @@ func (s Server) GetUserTransactions(ctx context.Context, req *proto.GetUserTrans
 }
 
 func (s Server) Serve() {
-	server := grpc.NewServer(
-		common.ServerLoggingInterceptor,
-	)
+	server := commonproto.NewServer(s.conf.Addr)
 	proto.RegisterWalletServiceServer(
 		server,
 		s,
 	)
 
-	lis, err := net.Listen("tcp", s.conf.Addr)
-	if err != nil {
-		common.L().Fatalw("netListenErr", "config", s.conf, "err", err.Error())
-	} else {
-		common.L().Infow("listening", "add", s.conf.Addr)
-	}
-
-	err = server.Serve(lis)
-	if err != nil {
-		common.L().Fatalw("serveErr", "err", err)
-	}
-
+	common.FatalIfErr(server.ListenAndServe())
 }

@@ -29,7 +29,7 @@ func NewGetUserWalletController(
 	return &GetUserWalletController{wClient: wClient}
 }
 
-func (c GetUserWalletController) Do() (common.AnyPtr, common.Code) {
+func (c *GetUserWalletController) Do() (common.AnyPtr, common.Code) {
 	getWalletResp, err := c.wClient.Get(c.ctx, &proto.GetWalletReq{UserId: c.req.Metadata.UserId})
 
 	code := common.GetCodeFromErr(err)

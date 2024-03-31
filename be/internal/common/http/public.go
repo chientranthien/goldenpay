@@ -5,6 +5,7 @@ import (
 	"context"
 	"io"
 
+	"github.com/chientranthien/goldenpay/internal/common/metric"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
@@ -127,6 +128,7 @@ func Init(conf common.ServiceConfig, uClient proto.UserServiceClient) {
 }
 
 func Run() {
+	go metric.ServeDefault()
 	server.ginServer.Run(server.conf.Addr)
 }
 

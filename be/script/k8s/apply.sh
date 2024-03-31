@@ -36,26 +36,32 @@ apply_all() {
 }
 
 apply_middleware() {
-  echo_info "Applying MySQL PV"
-  kubectl apply -f k8s/mysql_pv.yaml
+  for m in $(ls ./k8s/ -1) ; do
+    for f in $(ls ./k8s/$m -1) ; do
+      echo_info "Applying $m/$f"
+      kubectl apply -f k8s/"$m"/"$f"
+    done
+  done
 
-  echo_info "Applying MySQL"
-  kubectl apply -f k8s/mysql_dep.yaml
-
-  echo_info "applying Kafka"
-  kubectl apply -f k8s/kafka_dep.yaml
-
-  echo_info "applying Loki"
-  kubectl apply -f k8s/loki.yaml
-
-  echo_info "Applying Grafana PV"
-  kubectl apply -f k8s/grafana_pv.yaml
-
-  echo_info "applying Grafana"
-  kubectl apply -f k8s/grafana_dep.yaml
-
-  echo_info "applying Promtail"
-  kubectl apply -f k8s/promtail_ds.yaml
+#  echo_info "Applying MySQL PV"
+#
+#  echo_info "Applying MySQL"
+#  kubectl apply -f k8s/mysql_dep.yaml
+#
+#  echo_info "applying Kafka"
+#  kubectl apply -f k8s/kafka_dep.yaml
+#
+#  echo_info "applying Loki"
+#  kubectl apply -f k8s/loki.yaml
+#
+#  echo_info "Applying Grafana PV"
+#  kubectl apply -f k8s/grafana_pv.yaml
+#
+#  echo_info "applying Grafana"
+#  kubectl apply -f k8s/grafana_dep.yaml
+#
+#  echo_info "applying Promtail"
+#  kubectl apply -f k8s/promtail_ds.yaml
 }
 
 apply_service() {
