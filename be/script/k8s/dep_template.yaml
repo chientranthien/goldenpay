@@ -44,3 +44,17 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: server-fault
+spec:
+  hosts:
+  - __service
+  http:
+  - route:
+    - destination:
+        host: __service
+        subset: v1
