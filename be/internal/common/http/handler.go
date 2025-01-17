@@ -85,7 +85,14 @@ func (s Server) newHandler(epInfo EndpointInfo) func(ctx *gin.Context) {
 			body = reflect.New(t).Interface()
 		}
 		req.Body = body
-		ginCtx.BindJSON(req.Body)
+		if body != nil {
+			err := ginCtx.BindJSON(req.Body)
+			if err != nil {
+				common.L().Errorw("binJsonErr", "err", err)
+				ginCtx.JSON(http.StatusOK, &Resp{Code: common.CodeBody})
+				return
+			}
+		}
 
 		for _, hook := range epInfo.PreReqHooks {
 			if code = hook(ctx); !code.Success() {
@@ -93,6 +100,7 @@ func (s Server) newHandler(epInfo EndpointInfo) func(ctx *gin.Context) {
 				return
 			}
 		}
+
 		if code = c.Take(ctx, req); !code.Success() {
 			resp := &Resp{
 				Code: code,

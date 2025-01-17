@@ -10,13 +10,13 @@ metadata:
 spec:
   ports:
     - port: 5000
-      name: service
+      name: grpc
     - port: 5050
       name: metric
   selector:
     app: goldenpay
     name: http
-  clusterIP: None
+#  type: ClusterIP
 
 ---
 apiVersion: apps/v1
@@ -26,17 +26,21 @@ metadata:
   labels:
     app: goldenpay
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: goldenpay
       tier: be
   template:
     metadata:
+      annotations:
+        inject.istio.io/templates: grpc-agent
+        proxy.istio.io/config: '{"holdApplicationUntilProxyStarts": true}'
       labels:
         app: goldenpay
         name: http
         tier: be
+        version: v1
     spec:
       containers:
         - name: goldenpay-http
@@ -44,3 +48,32 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5000
+
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: http
+spec:
+  hosts:
+  - http
+  http:
+  - match:
+    - port: 5000
+    route:
+    - destination:
+        host: http
+        subset: v1
+
+---
+# DestinationRule
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: http
+spec:
+  host: http
+  subsets:
+  - name: v1
+    labels:
+      version: v1

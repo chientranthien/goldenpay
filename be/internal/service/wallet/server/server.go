@@ -65,7 +65,10 @@ func (s Server) GetUserTransactions(ctx context.Context, req *proto.GetUserTrans
 }
 
 func (s Server) Serve() {
-	server := commonproto.NewServer(s.conf.Addr)
+	server, err := commonproto.NewServer(s.conf.Addr)
+	if err != nil {
+		common.L().Fatalw("createServerErr", "err", err)
+	}
 	proto.RegisterWalletServiceServer(
 		server,
 		s,

@@ -4,6 +4,7 @@ import (
 	"github.com/chientranthien/goldenpay/internal/common"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	_ "google.golang.org/grpc/xds"
 )
 
 func NewDial(addr string) (*grpc.ClientConn, error) {

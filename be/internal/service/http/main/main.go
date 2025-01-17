@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/chientranthien/goldenpay/internal/common"
 	httpcommon "github.com/chientranthien/goldenpay/internal/common/http"
 	"github.com/chientranthien/goldenpay/internal/service/http/config"
 	"github.com/chientranthien/goldenpay/internal/service/http/controller"
@@ -9,6 +10,8 @@ import (
 )
 
 func setupHTTPServer() {
+	common.L().Infow("userService", "config", config.Get().UserService)
+	common.L().Infow("walletService", "config", config.Get().WalletService)
 	uClient := userclient.NewUserServiceClient(config.Get().UserService.Addr)
 	wClient := walletclient.NewWalletServiceClient(config.Get().WalletService.Addr)
 
@@ -35,7 +38,7 @@ func setupHTTPServer() {
 	httpcommon.RegisterGet(httpcommon.GetEndpointInfo{
 		EP:       "api/v1/users/wallets",
 		NewCtlFn: func() httpcommon.Ctl { return controller.NewGetUserWalletController(wClient) },
-		Req:      &controller.GetUserWalletBody{},
+		Req:      nil,
 		Resp:     &controller.GetUserWalletData{},
 	})
 
