@@ -65,7 +65,10 @@ func (s Server) GetByEmail(ctx context.Context, req *proto.GetByEmailReq) (*prot
 }
 
 func (s Server) Serve() {
-	server := commonproto.NewServer(s.conf.Addr)
+	server, err := commonproto.NewServer(s.conf.Addr)
+	if err != nil {
+		common.L().Fatalw("createServerErr", "err", err)
+	}
 	proto.RegisterUserServiceServer(
 		server,
 		s,

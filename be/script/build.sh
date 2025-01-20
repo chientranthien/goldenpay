@@ -26,7 +26,7 @@ EOF
 
 
 [[ -s "/home/chien_tran/.gvm/scripts/gvm" ]] && source "/home/chien_tran/.gvm/scripts/gvm"
-gvm use go1.19
+gvm use go1.22
 build() {
   service=$1
   echo_info "Building $service"

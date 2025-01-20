@@ -1,4 +1,4 @@
-FROM golang:1.19
+FROM golang:1.22
 
 RUN apt update -y
 RUN apt install iputils-ping -y

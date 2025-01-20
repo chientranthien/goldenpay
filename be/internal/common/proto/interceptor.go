@@ -16,7 +16,7 @@ var (
 
 var ServerLoggingInterceptor = grpc.ChainUnaryInterceptor(
 	func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
-		L().Infow("incomingReq", "cmd", info.FullMethod, "req", req)
+		L().Infow("incomingReq", "cmd", info.FullMethod, "req")
 		return handler(ctx, req)
 	},
 )
