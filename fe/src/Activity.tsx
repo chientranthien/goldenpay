@@ -1,23 +1,37 @@
 import React from "react";
-import {GetUserIdFromCookie} from "./common";
+import { GetUserIdFromCookie } from "./common";
 
-export default function Activity(props) {
+interface User {
+  id: number;
+  name: string;
+}
+
+interface ActivityProps {
+  status: number;
+  ctime: string;
+  from: User;
+  to: User;
+  amount: number;
+}
+
+export default function Activity(props: ActivityProps): React.ReactElement {
   let badge = "warning"
   let statusText = "Pending"
-  if (props.status == 2) {
+  if (props.status === 2) {
     badge = "danger"
     statusText = "Rejected"
-  } else if (props.status == 3) {
+  } else if (props.status === 3) {
     badge = "success"
     statusText = "Success"
   }
 
-  const DATE_OPTIONS = {weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'};
+  const DATE_OPTIONS: Intl.DateTimeFormatOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
   let d = new Date(props.ctime).toLocaleDateString('en-US', DATE_OPTIONS)
 
   let card
-  if (props.from.id == GetUserIdFromCookie()) {
-     card = <div className="card-body">
+
+  if (props.from.id === GetUserIdFromCookie()) {
+    card = <div className="card-body">
       <h5 className="card-title">To: {props.to.name}</h5>
       <div>
         <span className={"badge text-bg-" + badge}>{statusText}</span>

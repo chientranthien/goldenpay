@@ -11,12 +11,13 @@ spec:
   ports:
     - port: 5000
       name: grpc
+      nodePort: 30000
     - port: 5050
       name: metric
   selector:
     app: goldenpay
     name: http
-#  type: ClusterIP
+  type: NodePort
 
 ---
 apiVersion: apps/v1
