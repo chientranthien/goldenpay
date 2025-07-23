@@ -39,6 +39,8 @@ func main() {
 		controller.NewGetBatchController(biz),
 		controller.NewAuthzController(biz),
 		controller.NewGetByEmailController(biz),
+		controller.NewCreateContactIfNotExistController(biz),
+		controller.NewGetContactsController(biz),
 	)
 
 	server.Serve()

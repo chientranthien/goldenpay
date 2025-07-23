@@ -2,6 +2,8 @@ syntax = "proto3";
 
 option go_package = "./internal/proto";
 
+import "internal/proto/common.proto";
+
 service UserService {
   rpc Signup(SignupReq) returns (SignupResp){}
   rpc Login(LoginReq) returns (LoginResp){}
@@ -9,6 +11,8 @@ service UserService {
   rpc Get(GetReq) returns (GetResp){}
   rpc GetBatch(GetBatchReq) returns (GetBatchResp){}
   rpc GetByEmail(GetByEmailReq) returns (GetByEmailResp){}
+  rpc CreateContactIfNotExist(CreateContactIfNotExistReq) returns (CreateContactIfNotExistResp){}
+  rpc GetContacts(GetContactsReq) returns (GetContactsResp){}
 }
 
 message GetByEmailReq {
@@ -68,6 +72,32 @@ message GetBatchResp {
   repeated User users = 1;
 }
 
+message GetContactsReq {
+  GetContactsCond Cond = 1;
+  Pagination pagination = 2;
+}
+
+message GetContactsResp {
+  repeated Contact contacts = 1;
+  Pagination next_pagination = 2;
+}
+
+message GetContactsCond {
+  message UserCond {
+    uint64 eq = 2;
+  }
+
+  UserCond user = 1;
+  CtimeCond ctime = 2;
+}
+
+message CreateContactIfNotExistReq {
+  uint64 user_id = 1;
+  uint64 contact_user_id = 2;
+}
+
+message CreateContactIfNotExistResp {}
+
 message User {
   uint64 id = 1;
   string email = 2;
@@ -77,6 +107,16 @@ message User {
   uint64 version = 6;
   uint64 ctime = 7;
   uint64 mtime = 8;
+}
+
+message Contact {
+  uint64 id = 1;
+  uint64 user_id = 2;
+  uint64 contact_user_id = 3;
+  uint64 status = 4;
+  uint64 version = 5;
+  uint64 ctime = 6;
+  uint64 mtime = 7;
 }
 
 message NewUserEvent {

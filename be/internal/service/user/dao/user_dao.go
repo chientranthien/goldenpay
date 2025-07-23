@@ -2,6 +2,7 @@ package dao
 
 import (
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/chientranthien/goldenpay/internal/common"
 	"github.com/chientranthien/goldenpay/internal/proto"
@@ -17,6 +18,10 @@ func NewUserDao(db *gorm.DB) *UserDao {
 
 func (d UserDao) getDB() *gorm.DB {
 	return d.db.Table("user_tab")
+}
+
+func (d UserDao) getContactDB() *gorm.DB {
+	return d.db.Table("contact_tab")
 }
 
 func (d *UserDao) Insert(user *proto.User) error {
@@ -72,4 +77,23 @@ func (d UserDao) GetBatch(ids []uint64) ([]*proto.User, error) {
 	}
 
 	return users, nil
+}
+
+func (d *UserDao) GetContacts(conds ...clause.Expression) ([]*proto.Contact, error) {
+	var contacts []*proto.Contact
+	if err := d.getContactDB().
+		Clauses(conds...).
+		Find(&contacts).Error; err != nil {
+		common.L().Errorw("getContactsErr", "err", err)
+		return nil, err
+	}
+
+	return contacts, nil
+}
+
+func (d *UserDao) InsertContact(contact *proto.Contact) error {
+	return d.getContactDB().Clauses(clause.OnConflict{
+		Columns:   []clause.Column{{Name: ContactColId}, {Name: ContactColUserId}},
+		DoNothing: true,
+	}).Create(contact).Error
 }

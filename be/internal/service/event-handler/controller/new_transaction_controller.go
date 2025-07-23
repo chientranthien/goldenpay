@@ -14,10 +14,11 @@ import (
 
 type NewTransactionController struct {
 	wClient proto.WalletServiceClient
+	uClient proto.UserServiceClient
 }
 
-func NewNewTransactionController(wClient proto.WalletServiceClient) *NewTransactionController {
-	return &NewTransactionController{wClient: wClient}
+func NewNewTransactionController(wClient proto.WalletServiceClient, uClient proto.UserServiceClient) *NewTransactionController {
+	return &NewTransactionController{wClient: wClient, uClient: uClient}
 }
 
 func (c NewTransactionController) Setup(session sarama.ConsumerGroupSession) error {
@@ -90,8 +91,16 @@ func (c NewTransactionController) handleMessage(m *sarama.ConsumerMessage) {
 		return
 	}
 
+	_, err = c.uClient.CreateContactIfNotExist(ctx, &proto.CreateContactIfNotExistReq{
+		UserId:        event.FromUser,
+		ContactUserId: event.ToUser,
+	})
+
 	if err != nil {
 		common.L().Errorw("processTransferErr", "event", event, "err", err)
 	}
+}
+
+func (c NewTransactionController) addContact(event *proto.NewTransactionEvent) {
 
 }

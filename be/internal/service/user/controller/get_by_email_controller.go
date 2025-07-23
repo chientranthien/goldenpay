@@ -17,7 +17,7 @@ func NewGetByEmailController(biz *biz.UserBiz) *GetByEmailController {
 	return &GetByEmailController{biz: biz}
 }
 
-func (c GetByEmailController) GetByEmail(req *proto.GetByEmailReq) (*proto.GetByEmailResp, error) {
+func (c GetByEmailController) Do(req *proto.GetByEmailReq) (*proto.GetByEmailResp, error) {
 	if err := c.validate(req); err != nil {
 		return nil, err
 	}

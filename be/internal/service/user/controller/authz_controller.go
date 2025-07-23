@@ -21,7 +21,7 @@ func NewAuthzController(biz *biz.UserBiz) *AuthzController {
 	return &AuthzController{biz: biz}
 }
 
-func (c AuthzController) Authz(ctx context.Context, req *proto.AuthzReq) (*proto.AuthzResp, error) {
+func (c AuthzController) Do(ctx context.Context, req *proto.AuthzReq) (*proto.AuthzResp, error) {
 	claims, err := c.biz.ParseToken(req.Token)
 	if err != nil {
 		return nil, err

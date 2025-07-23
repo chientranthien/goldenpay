@@ -77,6 +77,8 @@ func (b WalletBiz) Transfer(req *proto.TransferReq) (*proto.TransferResp, error)
 	e := &proto.NewTransactionEvent{
 		TransactionId: trans.Id,
 		EventTime:     trans.Ctime,
+		FromUser:      req.FromUser,
+		ToUser:        req.ToUser,
 	}
 
 	msg := &sarama.ProducerMessage{
@@ -233,7 +235,7 @@ func (b WalletBiz) shouldApproveTransaction(t *proto.Transaction, w *proto.Walle
 		return false
 	}
 
-	if t.FromWallet == t.ToWallet{
+	if t.FromWallet == t.ToWallet {
 		return false
 	}
 

@@ -1,0 +1,229 @@
+syntax = "proto3";
+
+option go_package = "./internal/proto";
+
+import "internal/proto/common.proto";
+
+service ChatService {
+  // Channel management
+  rpc CreateChannel(CreateChannelReq) returns (CreateChannelResp){}
+  rpc GetChannel(GetChannelReq) returns (GetChannelResp){}
+  rpc ListChannels(ListChannelsReq) returns (ListChannelsResp){}
+  rpc JoinChannel(JoinChannelReq) returns (JoinChannelResp){}
+  rpc LeaveChannel(LeaveChannelReq) returns (LeaveChannelResp){}
+  
+  // Message management
+  rpc SendMessage(SendMessageReq) returns (SendMessageResp){}
+  rpc GetMessages(GetMessagesReq) returns (GetMessagesResp){}
+  rpc UpdateMessage(UpdateMessageReq) returns (UpdateMessageResp){}
+  rpc DeleteMessage(DeleteMessageReq) returns (DeleteMessageResp){}
+  
+  // Direct messages
+  rpc CreateDirectMessage(CreateDirectMessageReq) returns (CreateDirectMessageResp){}
+  rpc GetDirectMessages(GetDirectMessagesReq) returns (GetDirectMessagesResp){}
+  
+  // User presence
+  rpc UpdatePresence(UpdatePresenceReq) returns (UpdatePresenceResp){}
+  rpc GetPresence(GetPresenceReq) returns (GetPresenceResp){}
+}
+
+// Channel messages
+message CreateChannelReq {
+  string name = 1;
+  string description = 2;
+  // Only "direct" type is needed, so we can remove the type field entirely.
+  repeated uint64 member_ids = 4;
+}
+
+message CreateChannelResp {
+  uint64 channel_id = 1;
+}
+
+message GetChannelReq {
+  uint64 channel_id = 1;
+}
+
+message GetChannelResp {
+  Channel channel = 1;
+}
+
+message ListChannelsReq {
+  uint64 user_id = 1;
+  Pagination pagination = 2;
+}
+
+message ListChannelsResp {
+  repeated Channel channels = 1;
+  Pagination next_pagination = 2;
+}
+
+message JoinChannelReq {
+  uint64 channel_id = 1;
+  uint64 user_id = 2;
+}
+
+message JoinChannelResp {
+}
+
+message LeaveChannelReq {
+  uint64 channel_id = 1;
+  uint64 user_id = 2;
+}
+
+message LeaveChannelResp {
+}
+
+// Message messages
+message SendMessageReq {
+  uint64 channel_id = 1;
+  uint64 user_id = 2;
+  string content = 3;
+  string message_type = 4; // "text", "file", "system"
+  MessageMetadata metadata = 5;
+}
+
+message SendMessageResp {
+  uint64 message_id = 1;
+}
+
+message GetMessagesReq {
+  uint64 channel_id = 1;
+  Pagination pagination = 2;
+}
+
+message GetMessagesResp {
+  repeated Message messages = 1;
+  Pagination next_pagination = 2;
+}
+
+message UpdateMessageReq {
+  uint64 message_id = 1;
+  uint64 user_id = 2;
+  string content = 3;
+}
+
+message UpdateMessageResp {
+}
+
+message DeleteMessageReq {
+  uint64 message_id = 1;
+  uint64 user_id = 2;
+}
+
+message DeleteMessageResp {
+}
+
+// Direct message messages
+message CreateDirectMessageReq {
+  uint64 from_user = 1;
+  uint64 to_user = 2;
+}
+
+message CreateDirectMessageResp {
+  uint64 channel_id = 1;
+}
+
+message GetDirectMessagesReq {
+  uint64 user_id = 1;
+  Pagination pagination = 2;
+}
+
+message GetDirectMessagesResp {
+  repeated Channel channels = 1;
+  Pagination next_pagination = 2;
+}
+
+// Presence messages
+message UpdatePresenceReq {
+  uint64 user_id = 1;
+  string status = 2; // "online", "away", "busy", "offline"
+  string status_text = 3;
+}
+
+message UpdatePresenceResp {
+}
+
+message GetPresenceReq {
+  repeated uint64 user_ids = 1;
+}
+
+message GetPresenceResp {
+  repeated UserPresence presences = 1;
+}
+
+// Data structures
+message Channel {
+  uint64 id = 1;
+  string name = 2;
+  string description = 3;
+  string type = 4;
+  uint64 creator_id = 5;
+  uint64 status = 6;
+  uint64 version = 7;
+  uint64 ctime = 8;
+  uint64 mtime = 9;
+  repeated ChannelMember members = 10;
+}
+
+message ChannelMember {
+  uint64 id = 1;
+  uint64 channel_id = 2;
+  uint64 user_id = 3;
+  string role = 4; // "admin", "member"
+  uint64 joined_at = 5;
+  uint64 last_read_at = 6;
+}
+
+message Message {
+  uint64 id = 1;
+  uint64 channel_id = 2;
+  uint64 user_id = 3;
+  string content = 4;
+  string message_type = 5;
+  MessageMetadata metadata = 6;
+  uint64 status = 7; // deleted, edited, etc.
+  uint64 version = 8;
+  uint64 ctime = 9;
+  uint64 mtime = 10;
+  uint64 reply_to_id = 11;
+}
+
+message MessageMetadata {
+  repeated string mentions = 1;
+  repeated string attachments = 2;
+  repeated MessageReaction reactions = 3;
+}
+
+message MessageReaction {
+  string emoji = 1;
+  repeated uint64 user_ids = 2;
+}
+
+message UserPresence {
+  uint64 user_id = 1;
+  string status = 2;
+  string status_text = 3;
+  uint64 last_activity = 4;
+}
+
+// Events for Kafka
+message NewMessageEvent {
+  uint64 message_id = 1;
+  uint64 channel_id = 2;
+  uint64 user_id = 3;
+  uint64 event_time = 4;
+}
+
+message ChannelMembershipEvent {
+  uint64 channel_id = 1;
+  uint64 user_id = 2;
+  string action = 3; // "joined", "left", "removed"
+  uint64 event_time = 4;
+}
+
+message UserPresenceEvent {
+  uint64 user_id = 1;
+  string status = 2;
+  string status_text = 3;
+  uint64 event_time = 4;
+} 

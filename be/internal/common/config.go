@@ -42,7 +42,7 @@ type ProducerConfig struct {
 type ConsumerConfig struct {
 	Addrs         []string `yaml:"addrs"`
 	Version       string   `yaml:"version"`
-	Topic         string `yaml:"topic"`
+	Topic         string   `yaml:"topic"`
 	ConsumerGroup string   `yaml:"consumer_group"`
 }
 
@@ -61,10 +61,10 @@ func GetDefaultConfigFile() string {
 
 func GetDefaultConfig(c any) {
 	configFile := os.Getenv("G_CONFIG")
-	if configFile == ""{
-	configFile = GetDefaultConfigFile()
+	if configFile == "" {
+		configFile = GetDefaultConfigFile()
 	}
-	
+
 	f, err := os.Open(configFile)
 	if err != nil {
 		log.Fatalf("failed to open config file, err=%v", err)

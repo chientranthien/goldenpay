@@ -28,6 +28,8 @@ type UserServiceClient interface {
 	Get(ctx context.Context, in *GetReq, opts ...grpc.CallOption) (*GetResp, error)
 	GetBatch(ctx context.Context, in *GetBatchReq, opts ...grpc.CallOption) (*GetBatchResp, error)
 	GetByEmail(ctx context.Context, in *GetByEmailReq, opts ...grpc.CallOption) (*GetByEmailResp, error)
+	CreateContactIfNotExist(ctx context.Context, in *CreateContactIfNotExistReq, opts ...grpc.CallOption) (*CreateContactIfNotExistResp, error)
+	GetContacts(ctx context.Context, in *GetContactsReq, opts ...grpc.CallOption) (*GetContactsResp, error)
 }
 
 type userServiceClient struct {
@@ -92,6 +94,24 @@ func (c *userServiceClient) GetByEmail(ctx context.Context, in *GetByEmailReq, o
 	return out, nil
 }
 
+func (c *userServiceClient) CreateContactIfNotExist(ctx context.Context, in *CreateContactIfNotExistReq, opts ...grpc.CallOption) (*CreateContactIfNotExistResp, error) {
+	out := new(CreateContactIfNotExistResp)
+	err := c.cc.Invoke(ctx, "/UserService/CreateContactIfNotExist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetContacts(ctx context.Context, in *GetContactsReq, opts ...grpc.CallOption) (*GetContactsResp, error) {
+	out := new(GetContactsResp)
+	err := c.cc.Invoke(ctx, "/UserService/GetContacts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -102,6 +122,8 @@ type UserServiceServer interface {
 	Get(context.Context, *GetReq) (*GetResp, error)
 	GetBatch(context.Context, *GetBatchReq) (*GetBatchResp, error)
 	GetByEmail(context.Context, *GetByEmailReq) (*GetByEmailResp, error)
+	CreateContactIfNotExist(context.Context, *CreateContactIfNotExistReq) (*CreateContactIfNotExistResp, error)
+	GetContacts(context.Context, *GetContactsReq) (*GetContactsResp, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -126,6 +148,12 @@ func (UnimplementedUserServiceServer) GetBatch(context.Context, *GetBatchReq) (*
 }
 func (UnimplementedUserServiceServer) GetByEmail(context.Context, *GetByEmailReq) (*GetByEmailResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetByEmail not implemented")
+}
+func (UnimplementedUserServiceServer) CreateContactIfNotExist(context.Context, *CreateContactIfNotExistReq) (*CreateContactIfNotExistResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateContactIfNotExist not implemented")
+}
+func (UnimplementedUserServiceServer) GetContacts(context.Context, *GetContactsReq) (*GetContactsResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetContacts not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -248,6 +276,42 @@ func _UserService_GetByEmail_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_CreateContactIfNotExist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateContactIfNotExistReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateContactIfNotExist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UserService/CreateContactIfNotExist",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateContactIfNotExist(ctx, req.(*CreateContactIfNotExistReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetContacts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetContactsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetContacts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UserService/GetContacts",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetContacts(ctx, req.(*GetContactsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -278,6 +342,14 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetByEmail",
 			Handler:    _UserService_GetByEmail_Handler,
+		},
+		{
+			MethodName: "CreateContactIfNotExist",
+			Handler:    _UserService_CreateContactIfNotExist_Handler,
+		},
+		{
+			MethodName: "GetContacts",
+			Handler:    _UserService_GetContacts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

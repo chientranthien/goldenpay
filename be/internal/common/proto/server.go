@@ -2,6 +2,7 @@ package proto
 
 import (
 	"net"
+	"os"
 
 	"github.com/chientranthien/goldenpay/internal/common"
 	"github.com/chientranthien/goldenpay/internal/common/metric"
@@ -13,12 +14,27 @@ var (
 	_ grpc.ServiceRegistrar = (*server)(nil)
 )
 
+type serve interface {
+	Serve(lis net.Listener) error
+	RegisterService(desc *grpc.ServiceDesc, impl any)
+}
+
 type server struct {
-	s    *xds.GRPCServer
+	s    serve
 	addr string
 }
 
 func NewServer(addr string) (*server, error) {
+	env := os.Getenv("G_ENV")
+	if env == "local" || env == "" {
+		s := grpc.NewServer(
+			ServerLoggingInterceptor,
+			// TODO(tom): consider to suer go-grpc-middleware
+			ServerMetricInterceptor,
+		)
+		return &server{s: s, addr: addr}, nil
+	}
+
 	s, err := xds.NewGRPCServer(
 		ServerLoggingInterceptor,
 		// TODO(tom): consider to suer go-grpc-middleware

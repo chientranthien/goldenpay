@@ -2,6 +2,8 @@ syntax = "proto3";
 
 option go_package = "./internal/proto";
 
+import "internal/proto/common.proto";
+
 service WalletService {
   rpc Create(CreateWalletReq) returns (CreateWalletResp){}
   rpc Get(GetWalletReq) returns (GetWalletResp){}
@@ -60,11 +62,6 @@ message GetUserTransactionsCond {
     uint64 eq = 2;
   }
 
-  message CtimeCond {
-    uint64 gte = 2;
-    uint64 lte = 3;
-  }
-
   UserCond user = 1;
   CtimeCond ctime = 2;
 }
@@ -77,12 +74,6 @@ message GetUserTransactionsReq {
 message GetUserTransactionsResp {
   repeated Transaction transactions = 1;
   Pagination next_pagination = 2;
-}
-
-message Pagination {
-  int64 val = 1;
-  uint32 limit = 2;
-  bool has_more = 3;
 }
 
 message Wallet {
@@ -123,4 +114,6 @@ message Topup {
 message NewTransactionEvent {
   uint64 transaction_id = 1;
   uint64 event_time = 2;
+  uint64 from_user = 3;
+  uint64 to_user = 4;
 }

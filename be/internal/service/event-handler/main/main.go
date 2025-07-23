@@ -12,6 +12,7 @@ import (
 	"github.com/chientranthien/goldenpay/internal/common"
 	"github.com/chientranthien/goldenpay/internal/service/event-handler/config"
 	"github.com/chientranthien/goldenpay/internal/service/event-handler/controller"
+	userclient "github.com/chientranthien/goldenpay/internal/service/user/client"
 	walletclient "github.com/chientranthien/goldenpay/internal/service/wallet/client"
 )
 
@@ -30,7 +31,8 @@ func main() {
 	go func() {
 		defer wg.Done()
 		wClient := walletclient.NewWalletServiceClient(config.Get().WalletService.Addr)
-		controller := controller.NewNewTransactionController(wClient)
+		uClient := userclient.NewUserServiceClient(config.Get().UserService.Addr)
+		controller := controller.NewNewTransactionController(wClient, uClient)
 		newTransactionConsumerGroup := newConsumerGroup(config.Get().NewTransactionConsumer)
 		newTransactionConsumerGroup.Consume(ctx, []string{config.Get().NewTransactionConsumer.Topic}, controller)
 	}()

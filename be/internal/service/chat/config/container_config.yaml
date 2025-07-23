@@ -1,0 +1,23 @@
+db:
+  addr: mysql:3306
+  user: root
+  pass: root
+  db_name: golden_pay_db
+
+chat_service:
+  addr: :5000
+
+new_message_producer:
+  addrs: ["kafka:9092"]
+  version: 3.6.0
+  topic: new_message_event
+
+presence_update_producer:
+  addrs: ["kafka:9092"]
+  version: 3.6.0
+  topic: presence_update_event
+
+membership_event_producer:
+  addrs: ["kafka:9092"]
+  version: 3.6.0
+  topic: membership_event 

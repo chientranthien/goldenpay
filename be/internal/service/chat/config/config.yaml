@@ -1,0 +1,23 @@
+db:
+  addr: localhost:53306
+  user: root
+  pass: root
+  db_name: golden_pay_db
+
+chat_service:
+  addr: :5003
+
+new_message_producer:
+  addrs: ["localhost:59092"]
+  version: 3.6.0
+  topic: new_message_event
+
+presence_update_producer:
+  addrs: ["localhost:59092"]
+  version: 3.6.0
+  topic: presence_update_event
+
+membership_event_producer:
+  addrs: ["localhost:59092"]
+  version: 3.6.0
+  topic: membership_event 

@@ -9,6 +9,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm/clause"
 
 	"github.com/chientranthien/goldenpay/internal/common"
 	"github.com/chientranthien/goldenpay/internal/proto"
@@ -198,4 +199,68 @@ func (b UserBiz) GetBatch(ids []uint64) (*proto.GetBatchResp, error) {
 	}
 
 	return &proto.GetBatchResp{Users: users}, nil
+}
+
+func (b *UserBiz) GetContacts(req *proto.GetContactsReq) (*proto.GetContactsResp, error) {
+	req.Pagination = common.EnsurePagination(req.Pagination)
+	user := clause.Eq{
+		Column: dao.ContactColUserId,
+		Value:  req.GetCond().User.Eq,
+	}
+
+	var whereCond clause.Expression
+	whereCond = clause.OrConditions{Exprs: []clause.Expression{user}}
+
+	if req.Pagination.Val != 0 {
+		id := clause.Lte{
+			Column: dao.ContactColId,
+			Value:  req.Pagination.Val,
+		}
+
+		whereCond = clause.AndConditions{Exprs: []clause.Expression{user, id}}
+	}
+
+	limit := clause.Limit{
+		Limit: common.Int(int(req.Pagination.Limit)),
+	}
+
+	order := clause.OrderBy{
+		Columns: []clause.OrderByColumn{{Column: clause.Column{Name: dao.ContactColId}, Desc: true}},
+	}
+
+	contacts, err := b.dao.GetContacts(whereCond, order, limit)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to get contacts")
+	}
+
+	nextPagination := common.NexPagination(req.Pagination, func(e interface{}) int64 {
+		if trans, ok := e.(*proto.Contact); ok {
+			return int64(trans.Id)
+		}
+
+		return 0
+	}, contacts)
+
+	if nextPagination.HasMore {
+		contacts = contacts[:len(contacts)-1]
+	}
+	return &proto.GetContactsResp{Contacts: contacts, NextPagination: nextPagination}, nil
+}
+
+func (b *UserBiz) CreateContactIfNotExist(req *proto.CreateContactIfNotExistReq) (*proto.CreateContactIfNotExistResp, error) {
+	contact := &proto.Contact{
+		UserId:        req.UserId,
+		ContactUserId: req.ContactUserId,
+		Status:        common.ContactStatusActive,
+		Version:       common.FirstVersion,
+		Ctime:         common.NowMillis(),
+		Mtime:         common.NowMillis(),
+	}
+
+	err := b.dao.InsertContact(contact)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to add contact")
+	}
+
+	return &proto.CreateContactIfNotExistResp{}, nil
 }

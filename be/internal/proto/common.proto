@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "./internal/proto";
+
+// Common pagination message used across all services
+message Pagination {
+  int64 val = 1;
+  uint32 limit = 2;
+  bool has_more = 3;
+}
+
+// Common condition messages for time-based filtering
+message CtimeCond {
+  uint64 gte = 1;
+  uint64 lte = 2;
+} 
