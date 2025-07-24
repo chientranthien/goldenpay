@@ -35,6 +35,12 @@ func setupHTTPServer() {
 		Req:      &controller.GetUserTransactionsBody{},
 		Resp:     &controller.GetUserTransactionsData{},
 	})
+	httpcommon.RegisterPost(httpcommon.PostEndpointInfo{
+		EP:       "api/v1/users/contacts/_query",
+		NewCtlFn: func() httpcommon.Ctl { return controller.NewGetContactsController(uClient) },
+		Req:      &controller.GetContactsBody{},
+		Resp:     &controller.GetContactsData{},
+	})
 	httpcommon.RegisterGet(httpcommon.GetEndpointInfo{
 		EP:       "api/v1/users/wallets",
 		NewCtlFn: func() httpcommon.Ctl { return controller.NewGetUserWalletController(wClient) },

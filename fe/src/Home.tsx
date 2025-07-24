@@ -50,7 +50,8 @@ export default function Home(): React.ReactElement | null {
               <h5>Balance</h5>
               <h2>${walletResp.data.balance}</h2>
               <Link className="btn btn-primary" to={"/transfer"}>Transfer</Link>
-              <Link className="btn btn-light" to={"/Topup"}>Topup</Link>
+              <Link className="btn btn-light" to={"/topup"}>Topup</Link>
+              <Link className="btn btn-success" to={"/chat"}>Chat</Link>
             </div>
 
           </div>

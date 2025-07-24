@@ -57,7 +57,7 @@ func (s Server) Topup(ctx context.Context, req *proto.TopupReq) (*proto.TopupRes
 }
 
 func (s Server) Create(ctx context.Context, req *proto.CreateWalletReq) (*proto.CreateWalletResp, error) {
-	return s.createController.Create(req)
+	return s.createController.Do(req)
 }
 
 func (s Server) GetUserTransactions(ctx context.Context, req *proto.GetUserTransactionsReq) (*proto.GetUserTransactionsResp, error) {

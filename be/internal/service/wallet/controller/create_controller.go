@@ -17,7 +17,7 @@ func NewCreateController(biz *biz.WalletBiz) *CreateController {
 	return &CreateController{biz: biz}
 }
 
-func (c CreateController) Create(req *proto.CreateWalletReq) (*proto.CreateWalletResp, error) {
+func (c CreateController) Do(req *proto.CreateWalletReq) (*proto.CreateWalletResp, error) {
 	if err := c.validate(req); err != nil {
 		return nil, err
 	}

@@ -3,3 +3,6 @@ bin/
 
 fe/node_modules
 log/
+logs/
+local_services.pid
+mattermost/

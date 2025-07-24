@@ -1,11 +1,12 @@
 import './App.css';
-import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import Login from './Login'
 import Signup from './Signup'
 import Home from './Home'
 import Transfer from './Transfer'
 import Topup from './Topup'
+import Chat from './Chat'
 
 export default function App() {
   return (
@@ -29,25 +30,28 @@ export default function App() {
             renders the first one that matches the current URL. */}
         <Switch>
           <Route path="/about">
-            <About/>
+            <About />
           </Route>
           <Route path="/users">
-            <Users/>
+            <Users />
           </Route>
           <Route exact path="/">
-            <Home/>
+            <Home />
           </Route>
           <Route path="/login">
-            <Login/>
+            <Login />
           </Route>
           <Route path="/signup">
-            <Signup/>
+            <Signup />
           </Route>
           <Route path="/transfer">
-            <Transfer/>
+            <Transfer />
           </Route>
           <Route path="/topup">
-            <Topup/>
+            <Topup />
+          </Route>
+          <Route path="/chat">
+            <Chat />
           </Route>
         </Switch>
       </div>
