@@ -1,7 +1,5 @@
--- Chat service database schema
-
 -- Channels table
-CREATE TABLE IF NOT EXISTS channels (
+CREATE TABLE IF NOT EXISTS channel_tab (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -19,7 +17,7 @@ CREATE TABLE IF NOT EXISTS channels (
 );
 
 -- Channel members table
-CREATE TABLE IF NOT EXISTS channel_members (
+CREATE TABLE IF NOT EXISTS channel_member_tab (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     channel_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -34,7 +32,7 @@ CREATE TABLE IF NOT EXISTS channel_members (
 );
 
 -- Messages table
-CREATE TABLE IF NOT EXISTS messages (
+CREATE TABLE IF NOT EXISTS message_tab (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     channel_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -55,19 +53,8 @@ CREATE TABLE IF NOT EXISTS messages (
     INDEX idx_channel_ctime (channel_id, ctime) -- for efficient message history queries
 );
 
--- User presence table
-CREATE TABLE IF NOT EXISTS user_presences (
-    user_id BIGINT PRIMARY KEY,
-    status VARCHAR(50) NOT NULL DEFAULT 'offline', -- 'online', 'away', 'busy', 'offline'
-    status_text VARCHAR(255) DEFAULT '',
-    last_activity BIGINT NOT NULL,
-    
-    INDEX idx_status (status),
-    INDEX idx_last_activity (last_activity)
-);
-
 -- Message reactions table (for emoji reactions)
-CREATE TABLE IF NOT EXISTS message_reactions (
+CREATE TABLE IF NOT EXISTS message_reaction_tab (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     message_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -80,7 +67,7 @@ CREATE TABLE IF NOT EXISTS message_reactions (
 );
 
 -- File attachments table
-CREATE TABLE IF NOT EXISTS message_attachments (
+CREATE TABLE IF NOT EXISTS message_attachment_tab (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     message_id BIGINT NOT NULL,
     file_name VARCHAR(255) NOT NULL,

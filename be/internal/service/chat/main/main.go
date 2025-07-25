@@ -24,21 +24,26 @@ func main() {
 		common.L().Fatalw("openDBErr", "conf", config.Get().DB, "err", err)
 	}
 
-	dao := dao.NewChatDao(db)
-	biz := biz.NewChatBiz(
-		dao,
+	// Create DAOs
+	channelDao := dao.NewChannelDao(db)
+	messageDao := dao.NewMessageDao(db)
+
+	// Create business logic services
+	channelBiz := biz.NewChannelBiz(channelDao)
+	messageBiz := biz.NewMessageBiz(
+		messageDao,
+		channelDao,
 		common.NewKafkaProducer(config.Get().NewMessageProducer),
 		config.Get().NewMessageProducer,
-		common.NewKafkaProducer(config.Get().PresenceUpdateProducer),
-		config.Get().PresenceUpdateProducer,
-		common.NewKafkaProducer(config.Get().MembershipEventProducer),
-		config.Get().MembershipEventProducer,
 	)
+
 	server := server.NewServer(
 		config.Get().ChatService,
-		controller.NewChannelController(biz),
-		controller.NewMessageController(biz),
-		controller.NewPresenceController(biz),
+		controller.NewGetChannelController(channelBiz),
+		controller.NewSendMessageController(messageBiz),
+		controller.NewGetMessagesController(messageBiz),
+		controller.NewCreateDirectMessageChannelController(channelBiz),
+		controller.NewGetDirectMessagesController(channelBiz),
 	)
 
 	server.Serve()

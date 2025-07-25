@@ -21,9 +21,7 @@ func Get() Config {
 }
 
 type Config struct {
-	DB                      common.DBConfig       `yaml:"db"`
-	ChatService             common.ServiceConfig  `yaml:"chat_service"`
-	NewMessageProducer      common.ProducerConfig `yaml:"new_message_producer"`
-	PresenceUpdateProducer  common.ProducerConfig `yaml:"presence_update_producer"`
-	MembershipEventProducer common.ProducerConfig `yaml:"membership_event_producer"`
+	DB                 common.DBConfig       `yaml:"db"`
+	ChatService        common.ServiceConfig  `yaml:"chat_service"`
+	NewMessageProducer common.ProducerConfig `yaml:"new_message_producer"`
 }

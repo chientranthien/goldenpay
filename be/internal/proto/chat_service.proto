@@ -6,72 +6,29 @@ import "internal/proto/common.proto";
 
 service ChatService {
   // Channel management
-  rpc CreateChannel(CreateChannelReq) returns (CreateChannelResp){}
   rpc GetChannel(GetChannelReq) returns (GetChannelResp){}
-  rpc ListChannels(ListChannelsReq) returns (ListChannelsResp){}
-  rpc JoinChannel(JoinChannelReq) returns (JoinChannelResp){}
-  rpc LeaveChannel(LeaveChannelReq) returns (LeaveChannelResp){}
   
   // Message management
   rpc SendMessage(SendMessageReq) returns (SendMessageResp){}
   rpc GetMessages(GetMessagesReq) returns (GetMessagesResp){}
-  rpc UpdateMessage(UpdateMessageReq) returns (UpdateMessageResp){}
-  rpc DeleteMessage(DeleteMessageReq) returns (DeleteMessageResp){}
   
   // Direct messages
-  rpc CreateDirectMessage(CreateDirectMessageReq) returns (CreateDirectMessageResp){}
+  rpc CreateDirectMessageChannel(CreateDirectMessageChannelReq) returns (CreateDirectMessageChannelResp){}
   rpc GetDirectMessages(GetDirectMessagesReq) returns (GetDirectMessagesResp){}
-  
-  // User presence
-  rpc UpdatePresence(UpdatePresenceReq) returns (UpdatePresenceResp){}
-  rpc GetPresence(GetPresenceReq) returns (GetPresenceResp){}
 }
 
 // Channel messages
-message CreateChannelReq {
-  string name = 1;
-  string description = 2;
-  // Only "direct" type is needed, so we can remove the type field entirely.
-  repeated uint64 member_ids = 4;
-}
-
-message CreateChannelResp {
-  uint64 channel_id = 1;
-}
-
 message GetChannelReq {
   uint64 channel_id = 1;
+  uint64 user_id = 2;
 }
 
 message GetChannelResp {
   Channel channel = 1;
+  repeated ChannelMember members = 2;
 }
 
-message ListChannelsReq {
-  uint64 user_id = 1;
-  Pagination pagination = 2;
-}
 
-message ListChannelsResp {
-  repeated Channel channels = 1;
-  Pagination next_pagination = 2;
-}
-
-message JoinChannelReq {
-  uint64 channel_id = 1;
-  uint64 user_id = 2;
-}
-
-message JoinChannelResp {
-}
-
-message LeaveChannelReq {
-  uint64 channel_id = 1;
-  uint64 user_id = 2;
-}
-
-message LeaveChannelResp {
-}
 
 // Message messages
 message SendMessageReq {
@@ -88,7 +45,8 @@ message SendMessageResp {
 
 message GetMessagesReq {
   uint64 channel_id = 1;
-  Pagination pagination = 2;
+  uint64 user_id = 2;
+  Pagination pagination = 3;
 }
 
 message GetMessagesResp {
@@ -96,30 +54,15 @@ message GetMessagesResp {
   Pagination next_pagination = 2;
 }
 
-message UpdateMessageReq {
-  uint64 message_id = 1;
-  uint64 user_id = 2;
-  string content = 3;
-}
 
-message UpdateMessageResp {
-}
-
-message DeleteMessageReq {
-  uint64 message_id = 1;
-  uint64 user_id = 2;
-}
-
-message DeleteMessageResp {
-}
 
 // Direct message messages
-message CreateDirectMessageReq {
+message CreateDirectMessageChannelReq {
   uint64 from_user = 1;
   uint64 to_user = 2;
 }
 
-message CreateDirectMessageResp {
+message CreateDirectMessageChannelResp {
   uint64 channel_id = 1;
 }
 
@@ -133,23 +76,7 @@ message GetDirectMessagesResp {
   Pagination next_pagination = 2;
 }
 
-// Presence messages
-message UpdatePresenceReq {
-  uint64 user_id = 1;
-  string status = 2; // "online", "away", "busy", "offline"
-  string status_text = 3;
-}
 
-message UpdatePresenceResp {
-}
-
-message GetPresenceReq {
-  repeated uint64 user_ids = 1;
-}
-
-message GetPresenceResp {
-  repeated UserPresence presences = 1;
-}
 
 // Data structures
 message Channel {
@@ -162,7 +89,6 @@ message Channel {
   uint64 version = 7;
   uint64 ctime = 8;
   uint64 mtime = 9;
-  repeated ChannelMember members = 10;
 }
 
 message ChannelMember {
@@ -199,12 +125,7 @@ message MessageReaction {
   repeated uint64 user_ids = 2;
 }
 
-message UserPresence {
-  uint64 user_id = 1;
-  string status = 2;
-  string status_text = 3;
-  uint64 last_activity = 4;
-}
+
 
 // Events for Kafka
 message NewMessageEvent {
@@ -214,16 +135,6 @@ message NewMessageEvent {
   uint64 event_time = 4;
 }
 
-message ChannelMembershipEvent {
-  uint64 channel_id = 1;
-  uint64 user_id = 2;
-  string action = 3; // "joined", "left", "removed"
-  uint64 event_time = 4;
-}
 
-message UserPresenceEvent {
-  uint64 user_id = 1;
-  string status = 2;
-  string status_text = 3;
-  uint64 event_time = 4;
-} 
+
+ 

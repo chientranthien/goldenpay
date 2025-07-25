@@ -3,6 +3,7 @@ import ChatService, { Channel, Message, Contact } from './api/chatService';
 import { useRedirectToLoginIfNotAuthenticated, GetUserIdFromCookie } from './common';
 import ContactsList from './components/ContactsList';
 import ChatBox from './components/ChatBox';
+import Nav from './Nav';
 import './Chat.css';
 
 interface ChatState {
@@ -125,35 +126,38 @@ export default function Chat() {
     }
 
     return (
-        <div className="chat-container">
-            <div className="chat-sidebar">
-                <div className="chat-header">
-                    <h3>Contacts</h3>
-                </div>
-                <ContactsList
-                    contacts={chatState.contacts}
-                    selectedContact={chatState.selectedContact}
-                    onContactSelect={handleContactSelect}
-                    loading={chatState.loading}
-                />
-            </div>
-
-            <div className="chat-main">
-                {chatState.selectedContact ? (
-                    <ChatBox
-                        contact={chatState.selectedContact}
-                        messages={chatState.messages}
-                        onSendMessage={handleSendMessage}
-                        currentUserId={userId || 0}
+        <>
+            <Nav />
+            <div className="chat-container">
+                <div className="chat-sidebar">
+                    <div className="chat-header">
+                        <h3>Contacts</h3>
+                    </div>
+                    <ContactsList
+                        contacts={chatState.contacts}
+                        selectedContact={chatState.selectedContact}
+                        onContactSelect={handleContactSelect}
                         loading={chatState.loading}
                     />
-                ) : (
-                    <div className="chat-welcome">
-                        <h2>Welcome to GoldenPay Chat</h2>
-                        <p>Select a contact to start chatting</p>
-                    </div>
-                )}
+                </div>
+
+                <div className="chat-main">
+                    {chatState.selectedContact ? (
+                        <ChatBox
+                            contact={chatState.selectedContact}
+                            messages={chatState.messages}
+                            onSendMessage={handleSendMessage}
+                            currentUserId={userId || 0}
+                            loading={chatState.loading}
+                        />
+                    ) : (
+                        <div className="chat-welcome">
+                            <h2>Welcome to GoldenPay Chat</h2>
+                            <p>Select a contact to start chatting</p>
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+        </>
     );
 } 
